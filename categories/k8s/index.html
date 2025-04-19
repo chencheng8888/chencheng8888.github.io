@@ -60,11 +60,11 @@
         <i class="fas fa-archive"></i>
         <span>归档</span>
       </a>
-      <a href="/categories/" class="nav-item ">
+      <a href="/categories/" class="nav-item active">
         <i class="fas fa-folder"></i>
         <span>分类</span>
       </a>
-      <a href="/tags/" class="nav-item active">
+      <a href="/tags/" class="nav-item ">
         <i class="fas fa-tags"></i>
         <span>标签</span>
       </a>
@@ -135,34 +135,28 @@
   <div class="sidebar-explorer">
     <div class="explorer-section">
       <div class="section-header">
-        <i class="fas fa-tags"></i>
-        <span>ALL TAGS</span>
+        <i class="fas fa-folder-open"></i>
+        <span>CATEGORIES</span>
       </div>
       <div class="section-content">
         
-          <div class="tag-item ">
-            <i class="fas fa-tag"></i>
-            <a href="../CI-CD/">CI/CD</a>
+          <a class="category-item " href="../CI-CD/">
+            <i class="fas fa-folder"></i>
+            <span>CI/CD</span>
             <span class="count">(1)</span>
-          </div>
+          </a>
         
-          <div class="tag-item active">
-            <i class="fas fa-tag"></i>
-            <a href="">golang</a>
+          <a class="category-item " href="../golang/">
+            <i class="fas fa-folder"></i>
+            <span>golang</span>
             <span class="count">(1)</span>
-          </div>
+          </a>
         
-          <div class="tag-item ">
-            <i class="fas fa-tag"></i>
-            <a href="../interface/">interface</a>
+          <a class="category-item active" href="">
+            <i class="fas fa-folder"></i>
+            <span>k8s</span>
             <span class="count">(1)</span>
-          </div>
-        
-          <div class="tag-item ">
-            <i class="fas fa-tag"></i>
-            <a href="../k8s/">k8s</a>
-            <span class="count">(1)</span>
-          </div>
+          </a>
         
       </div>
     </div>
@@ -172,61 +166,33 @@
   <div class="editor-content">
     <div class="tab-bar">
       <div class="tab active">
-        <i class="fas fa-tag"></i>
-        <span>tag: golang.md</span>
+        <i class="fas fa-folder-open"></i>
+        <span>k8s.md</span>
       </div>
     </div>
     
     <div class="content-area">
-      <div class="tag-header">
-        <h1>
-          <i class="fas fa-tag"></i>
-          Tag: golang
-        </h1>
-        <span class="tag-count">1 posts</span>
-      </div>
-
-      <div class="posts-container">
-        
-          <div class="post-card">
-            <div class="post-header">
+      <div class="category-detail">
+        <div class="category-header">
+          <i class="fas fa-folder"></i>
+          <h2>k8s</h2>
+          <span class="count">1 posts</span>
+        </div>
+        <div class="category-posts">
+          
+            <div class="post-item">
               <i class="fas fa-file-alt"></i>
-              <span class="post-title">
-                <a href="../../2025/04/16/%E5%A6%82%E4%BD%95%E7%94%A8interface/">如何用interface</a>
-              </span>
-            </div>
-            
-            <div class="post-meta">
-              <span class="date">
-                <i class="fas fa-calendar-alt"></i>
-                2025-04-16
-              </span>
-              
-                <span class="category">
-                  <i class="fas fa-folder"></i>
-                  <a class="category-link" href="../../categories/golang/">golang</a>
+              <div class="post-info">
+                <a href="../../2025/04/19/k8s_build/">搭建k8s集群</a>
+                <span class="date">
+                  <i class="fas fa-calendar-alt"></i>
+                  2025-04-19
                 </span>
-              
+              </div>
             </div>
-            
-            <div class="post-excerpt">
-              如何用interface一、了解下interface的相关知识1、interface是一种类型123type I interface &#123;    Get() int&#125;
-
-首先 interface 是一种类型，从它的定义可以看出来用了 type 关键字，更准确的说 interface 是一种具有一组方法的类型，这些方法定义了 interface 的行为。
-go 允许不带任何方法的 ...
-            </div>
-            
-            <div class="post-footer">
-              <a href="../../2025/04/16/%E5%A6%82%E4%BD%95%E7%94%A8interface/" class="read-more">
-                <i class="fas fa-code"></i>
-                Read More
-              </a>
-            </div>
-          </div>
-        
+          
+        </div>
       </div>
-
-      
     </div>
   </div>
 </div>

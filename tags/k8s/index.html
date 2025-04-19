@@ -146,9 +146,9 @@
             <span class="count">(1)</span>
           </div>
         
-          <div class="tag-item active">
+          <div class="tag-item ">
             <i class="fas fa-tag"></i>
-            <a href="">golang</a>
+            <a href="../golang/">golang</a>
             <span class="count">(1)</span>
           </div>
         
@@ -158,9 +158,9 @@
             <span class="count">(1)</span>
           </div>
         
-          <div class="tag-item ">
+          <div class="tag-item active">
             <i class="fas fa-tag"></i>
-            <a href="../k8s/">k8s</a>
+            <a href="">k8s</a>
             <span class="count">(1)</span>
           </div>
         
@@ -173,7 +173,7 @@
     <div class="tab-bar">
       <div class="tab active">
         <i class="fas fa-tag"></i>
-        <span>tag: golang.md</span>
+        <span>tag: k8s.md</span>
       </div>
     </div>
     
@@ -181,7 +181,7 @@
       <div class="tag-header">
         <h1>
           <i class="fas fa-tag"></i>
-          Tag: golang
+          Tag: k8s
         </h1>
         <span class="tag-count">1 posts</span>
       </div>
@@ -192,32 +192,38 @@
             <div class="post-header">
               <i class="fas fa-file-alt"></i>
               <span class="post-title">
-                <a href="../../2025/04/16/%E5%A6%82%E4%BD%95%E7%94%A8interface/">如何用interface</a>
+                <a href="../../2025/04/19/k8s_build/">搭建k8s集群</a>
               </span>
             </div>
             
             <div class="post-meta">
               <span class="date">
                 <i class="fas fa-calendar-alt"></i>
-                2025-04-16
+                2025-04-19
               </span>
               
                 <span class="category">
                   <i class="fas fa-folder"></i>
-                  <a class="category-link" href="../../categories/golang/">golang</a>
+                  <a class="category-link" href="../../categories/k8s/">k8s</a>
                 </span>
               
             </div>
             
             <div class="post-excerpt">
-              如何用interface一、了解下interface的相关知识1、interface是一种类型123type I interface &#123;    Get() int&#125;
+              搭建k8s集群
+注意，1-5步需要在master和node结点上都运行
 
-首先 interface 是一种类型，从它的定义可以看出来用了 type 关键字，更准确的说 interface 是一种具有一组方法的类型，这些方法定义了 interface 的行为。
-go 允许不带任何方法的 ...
+ubuntu配置k8s集群
+1.环境配置1.1 配置hosts1sudo vim /etc/hosts
+
+添加你结点的地址信息，比如我的是
+123192.168.21.138 master192.168.21.139 node1192.168.21.140 node2
+
+1.2 关闭swap分区[一定要做]123456sud...
             </div>
             
             <div class="post-footer">
-              <a href="../../2025/04/16/%E5%A6%82%E4%BD%95%E7%94%A8interface/" class="read-more">
+              <a href="../../2025/04/19/k8s_build/" class="read-more">
                 <i class="fas fa-code"></i>
                 Read More
               </a>

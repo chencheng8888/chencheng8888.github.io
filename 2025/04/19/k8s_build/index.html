@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="icon" href="../../../../favicon.png" type="image/x-icon">
+  <title>搭建k8s集群 | 狠狠地学</title>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../../../../css/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <!-- 添加代码高亮样式 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+  <!-- 添加highlight.js库 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>  <link rel="stylesheet" href="../../../../css/code.css">
+  <link rel="stylesheet" href="../../../../css/code-custom.css">
+  <link rel="stylesheet" href="../../../../css/code-languages.css">
+
+  <link rel="stylesheet" href="../../../../css/vscode.css">
+  <link rel="stylesheet" href="../../../../css/post.css">
+  <link rel="stylesheet" href="../../../../css/tag.css">
+  <link rel="stylesheet" href="../../../../css/categories.css">
+  <link rel="stylesheet" href="../../../../css/archive.css">
+  <link rel="stylesheet" href="../../../../css/search.css">
+  <link rel="stylesheet" href="../../../../css/mobile.css">  <link rel="stylesheet" href="../../../../css/responsive.css">
+  <link rel="stylesheet" href="../../../../css/elements.css">
+
+  <!-- 添加 JetBrains Mono 字体 -->  
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Add any custom head content here -->
+
+  <script src="../../../../js/explorer.js"></script>
+  <script src="../../../../js/code-copy.js"></script>
+  <script src="../../../../js/code-enhance.js"></script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+  <body>
+    <div class="wrapper">
+      <div class="mobile-menu-toggle">
+        <i class="fas fa-bars"></i>
+      </div>
+      <header class="vs-header">
+  <nav class="vs-nav">
+    <div class="nav-left">
+      <a href="/" class="nav-brand">
+        <i class="fas fa-terminal"></i>
+        狠狠地学
+      </a>
+    </div>
+    
+    <div class="nav-right">
+      <a href="/" class="nav-item ">
+        <i class="fas fa-home"></i>
+        <span>首页</span>
+      </a>
+      <a href="/archives/" class="nav-item ">
+        <i class="fas fa-archive"></i>
+        <span>归档</span>
+      </a>
+      <a href="/categories/" class="nav-item ">
+        <i class="fas fa-folder"></i>
+        <span>分类</span>
+      </a>
+      <a href="/tags/" class="nav-item ">
+        <i class="fas fa-tags"></i>
+        <span>标签</span>
+      </a>
+      <a href="/search/" class="nav-item ">
+        <i class="fas fa-search"></i>
+        <span>搜索</span>
+      </a>
+      <a href="/about/" class="nav-item ">
+        <i class="fas fa-info-circle"></i>
+        <span>关于</span>
+      </a>
+    </div>
+  </nav>
+</header>
+
+<script>
+  function smoothScroll(event, target) {
+    event.preventDefault();
+    const targetId = target.substring(target.indexOf('#') + 1);
+    const targetElement = document.getElementById(targetId);
+
+    if (targetElement) {
+      window.scrollTo({
+        top: targetElement.offsetTop - 50, // 调整偏移量
+        behavior: 'smooth'
+      });
+    } else {
+      window.location.href = target;
+    }
+  }
+
+  window.addEventListener('scroll', function() {
+    const header = document.querySelector('.vs-header');
+    const nav = document.querySelector('.vs-nav');
+    const scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+    
+    nav.style.setProperty('--scroll-percent', `${scrollPercent}%`);
+    
+    if (window.scrollY > 0) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
+  });
+
+  // 添加标签页切换动画
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+      const ripple = document.createElement('span');
+      ripple.classList.add('nav-ripple');
+      this.appendChild(ripple);
+      
+      const rect = this.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      ripple.style.left = `${x}px`;
+      ripple.style.top = `${y}px`;
+      
+      setTimeout(() => ripple.remove(), 1000);
+    });
+  });
+</script>
+
+
+<div class="vscode-container">
+  <!-- 左侧资源管理器 -->
+  <div class="sidebar-explorer">
+    <!-- TOC导航 -->
+    <div class="explorer-section">
+      <div class="section-header">
+        <i class="fas fa-list"></i>
+        <span>TABLE OF CONTENTS</span>
+      </div>
+      <div class="section-content">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%90%AD%E5%BB%BAk8s%E9%9B%86%E7%BE%A4"><span class="toc-text">搭建k8s集群</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="toc-text">1.环境配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E9%85%8D%E7%BD%AEhosts"><span class="toc-text">1.1 配置hosts</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E5%85%B3%E9%97%ADswap%E5%88%86%E5%8C%BA-%E4%B8%80%E5%AE%9A%E8%A6%81%E5%81%9A"><span class="toc-text">1.2 关闭swap分区[一定要做]</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E7%A6%81%E7%94%A8selinux%EF%BC%88%E4%B8%80%E8%88%AC%E6%98%AF%E9%BB%98%E8%AE%A4%E7%A6%81%E7%94%A8%E7%9A%84%EF%BC%89"><span class="toc-text">1.3 禁用selinux（一般是默认禁用的）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-%E5%85%81%E8%AE%B8-iptables-%E6%A3%80%E6%9F%A5%E6%A1%A5%E6%8E%A5%E6%B5%81%E9%87%8F"><span class="toc-text">1.4 允许 iptables 检查桥接流量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-5-%E5%8A%A0%E8%BD%BDip-vs%E5%86%85%E6%A0%B8%E6%A8%A1%E5%9D%97"><span class="toc-text">1.5 加载ip_vs内核模块</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%AE%89%E8%A3%85docker"><span class="toc-text">2.安装docker</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E9%85%8D%E7%BD%AE"><span class="toc-text">3.配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85cri-dockerd%E3%80%90%E5%8F%AF%E5%BF%BD%E7%95%A5%EF%BC%8C%E5%A6%82%E6%9E%9C%E8%A6%81%E4%BD%BF%E7%94%A8docker%E4%BD%9C%E4%B8%BACRI%EF%BC%8C%E5%B0%B1%E9%9C%80%E8%A6%81%EF%BC%8C%E4%BD%86%E6%98%AF%E6%88%91%E8%BF%98%E6%98%AF%E6%8E%A8%E8%8D%90%E4%BD%BF%E7%94%A8docker%E5%BA%95%E5%B1%82%E4%BD%BF%E7%94%A8%E7%9A%84containerd%EF%BC%8C%E4%B9%9F%E6%98%AFk8s%E6%8E%A8%E8%8D%90%E7%9A%84%E3%80%91"><span class="toc-text">安装cri-dockerd【可忽略，如果要使用docker作为CRI，就需要，但是我还是推荐使用docker底层使用的containerd，也是k8s推荐的】</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%AE%89%E8%A3%85kubeadm-kubelet-kubectl"><span class="toc-text">4.安装kubeadm kubelet kubectl</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E6%8B%89%E5%8F%96%E6%89%80%E9%9C%80%E9%95%9C%E5%83%8F"><span class="toc-text">5.拉取所需镜像</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E4%BD%BF%E7%94%A8kubeadm%E5%88%9B%E5%BB%BA%E9%9B%86%E7%BE%A4"><span class="toc-text">6.使用kubeadm创建集群</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E6%89%A7%E8%A1%8Ckubeadm-init%E3%80%90master%E7%BB%93%E7%82%B9%E3%80%91"><span class="toc-text">6.1 执行kubeadm init【master结点】</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="toc-text">6.2 配置环境变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-node%E7%BB%93%E7%82%B9%E5%8A%A0%E5%85%A5"><span class="toc-text">6.3 node结点加入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-4-%E5%AE%89%E8%A3%85Pod%E7%BD%91%E7%BB%9C%E6%8F%92%E4%BB%B6"><span class="toc-text">6.4 安装Pod网络插件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-5-%E7%BC%96%E8%BE%91-kube-proxy-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%EF%BC%8Cmode-%E4%BF%AE%E6%94%B9%E6%88%90-ipvs"><span class="toc-text">6.5 编辑 kube-proxy 配置文件，mode 修改成 ipvs</span></a></li></ol></li></ol></li></ol>
+      </div>
+    </div>
+    
+    <!-- 同分类文章 -->
+    
+    <div class="explorer-section">
+      <div class="section-header">
+        <i class="fas fa-folder"></i>
+        <span>CATEGORY POSTS</span>
+      </div>
+      <div class="section-content">
+        
+      </div>
+    </div>
+    
+    
+    <!-- 标签列表 -->
+    
+    <div class="explorer-section">
+      <div class="section-header">
+        <i class="fas fa-tags"></i>
+        <span>ARTICLE TAGS</span>
+      </div>
+      <div class="section-content">
+        
+          <div class="tag-item">
+            <i class="fas fa-tag"></i>
+            <a href="../../../../tags/k8s/">k8s</a>
+            <span class="count">(1)</span>
+          </div>
+        
+      </div>
+    </div>
+    
+  </div>
+
+  <!-- 主要内容区域 -->
+  <div class="editor-content">
+    <div class="tab-bar">
+      <div class="tab active">
+        <i class="fas fa-file-alt"></i>
+        <span>搭建k8s集群.md</span>
+      </div>
+    </div>
+    
+    <div class="content-area">
+      <article class="post-content">
+        <div class="post-header">
+          <h1>搭建k8s集群</h1>
+          <div class="post-meta">
+            <span class="date">
+              <i class="fas fa-calendar-alt"></i>
+              2025-04-19
+            </span>            
+              <span class="categories">
+                <i class="fas fa-folder"></i>
+                <div class="categories-list">
+                  <ul class="category-item-post-list"><li class="category-item-post-list-item"><a class="category-item-post-list-link" href="../../../../categories/k8s/">k8s</a></li></ul>
+                </div>
+              </span>
+            
+            
+              <span class="tags">
+                <i class="fas fa-tags"></i>
+                <div class="tags-list">
+                  <ul class="tag-item-post-list" itemprop="keywords"><li class="tag-item-post-list-item"><a class="tag-item-post-list-link" href="../../../../tags/k8s/" rel="tag">k8s</a></li></ul>
+                </div>
+              </span>
+            
+          </div>
+        </div>
+        
+        <div class="post-body vscode-markdown">
+          <h1 id="搭建k8s集群"><a href="#搭建k8s集群" class="headerlink" title="搭建k8s集群"></a>搭建k8s集群</h1><blockquote>
+<p>注意，1-5步需要在master和node结点上都运行</p>
+</blockquote>
+<p><strong>ubuntu配置k8s集群</strong></p>
+<h2 id="1-环境配置"><a href="#1-环境配置" class="headerlink" title="1.环境配置"></a>1.环境配置</h2><h3 id="1-1-配置hosts"><a href="#1-1-配置hosts" class="headerlink" title="1.1 配置hosts"></a>1.1 配置hosts</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> vim /etc/hosts<br></code></pre></td></tr></table></figure>
+
+<p>添加你结点的地址信息，比如我的是</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">192.168.21.138 master<br>192.168.21.139 node1<br>192.168.21.140 node2<br></code></pre></td></tr></table></figure>
+
+<h3 id="1-2-关闭swap分区-一定要做"><a href="#1-2-关闭swap分区-一定要做" class="headerlink" title="1.2 关闭swap分区[一定要做]"></a>1.2 关闭swap分区[<strong>一定要做</strong>]</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> vim /etc/fstab<br><br><span class="hljs-comment">## 把类似  #/swap.img	none	swap	sw	0	0  注释掉</span><br><br><span class="hljs-comment">## 保存后重启</span><br><span class="hljs-built_in">sudo</span> reboot<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="1-3-禁用selinux（一般是默认禁用的）"><a href="#1-3-禁用selinux（一般是默认禁用的）" class="headerlink" title="1.3 禁用selinux（一般是默认禁用的）"></a>1.3 禁用selinux（一般是默认禁用的）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 永久禁用</span><br>sed -i <span class="hljs-string">&#x27;s/^SELINUX=enforcing$/SELINUX=disabled/&#x27;</span> /etc/selinux/config<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="1-4-允许-iptables-检查桥接流量"><a href="#1-4-允许-iptables-检查桥接流量" class="headerlink" title="1.4 允许 iptables 检查桥接流量"></a>1.4 允许 iptables 检查桥接流量</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> modprobe br_netfilter<br>lsmod | grep br_netfilter<br><br><span class="hljs-built_in">cat</span> &lt;&lt;<span class="hljs-string">EOF | sudo tee /etc/modules-load.d/k8s.conf</span><br><span class="hljs-string">overlay</span><br><span class="hljs-string">br_netfilter</span><br><span class="hljs-string">EOF</span><br><br><span class="hljs-built_in">sudo</span> modprobe overlay<br><span class="hljs-built_in">sudo</span> modprobe br_netfilter<br><br><span class="hljs-comment"># 设置所需的 sysctl 参数，参数在重新启动后保持不变</span><br><span class="hljs-built_in">cat</span> &lt;&lt;<span class="hljs-string">EOF | sudo tee /etc/sysctl.d/k8s.conf</span><br><span class="hljs-string">net.bridge.bridge-nf-call-iptables  = 1</span><br><span class="hljs-string">net.bridge.bridge-nf-call-ip6tables = 1</span><br><span class="hljs-string">net.ipv4.ip_forward                 = 1</span><br><span class="hljs-string">EOF</span><br><br><span class="hljs-comment"># 应用 sysctl 参数而不重新启动</span><br><span class="hljs-built_in">sudo</span> sysctl --system<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="1-5-加载ip-vs内核模块"><a href="#1-5-加载ip-vs内核模块" class="headerlink" title="1.5 加载ip_vs内核模块"></a>1.5 加载ip_vs内核模块</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> modprobe ip_vs<br><span class="hljs-built_in">sudo</span> modprobe ip_vs_rr<br><span class="hljs-built_in">sudo</span> modprobe ip_vs_wrr<br><span class="hljs-built_in">sudo</span> modprobe ip_vs_sh<br><span class="hljs-built_in">sudo</span> modprobe nf_conntrack<br><br><span class="hljs-built_in">cat</span> &lt;&lt;<span class="hljs-string">EOF | sudo tee /etc/modules-load.d/ipvs.conf</span><br><span class="hljs-string">ip_vs</span><br><span class="hljs-string">ip_vs_rr</span><br><span class="hljs-string">ip_vs_wrr</span><br><span class="hljs-string">ip_vs_sh</span><br><span class="hljs-string">nf_conntrack</span><br><span class="hljs-string">EOF</span><br><br><span class="hljs-comment">## 验证模块是否加载成功</span><br>lsmod | grep -e ip_vs -e nf_conntrack<br><span class="hljs-comment">##输出应该类似这样：</span><br>ip_vs_sh               16384  0<br>ip_vs_wrr              16384  0<br>ip_vs_rr               16384  0<br>ip_vs                 151552  6 ip_vs_rr,ip_vs_sh,ip_vs_wrr<br>nf_conntrack          139264  2 ip_vs,nf_nat<br><br><br><span class="hljs-comment">## 安装 IPVS 管理工具</span><br><span class="hljs-built_in">sudo</span> apt update<br><span class="hljs-built_in">sudo</span> apt install -y ipvsadm<br><br><span class="hljs-comment">## 查看当前的 IPVS 规则：</span><br><span class="hljs-built_in">sudo</span> ipvsadm -Ln<br></code></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="2-安装docker"><a href="#2-安装docker" class="headerlink" title="2.安装docker"></a>2.安装docker</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">## 更新系统</span><br><span class="hljs-built_in">sudo</span> apt upgrade -y<br><br><span class="hljs-comment">## 安装必要的依赖</span><br><span class="hljs-built_in">sudo</span> apt install -y \<br>    ca-certificates \<br>    curl \<br>    gnupg \<br>    lsb-release<br><br><span class="hljs-comment">## 添加 Docker 的官方 GPG 密钥</span><br><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">mkdir</span> -p /etc/apt/keyrings<br>curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \<br>    <span class="hljs-built_in">sudo</span> gpg --dearmor -o /etc/apt/keyrings/docker.gpg<br>    <br><span class="hljs-comment">## 设置 Docker 仓库    </span><br><span class="hljs-built_in">echo</span> \<br>  <span class="hljs-string">&quot;deb [arch=<span class="hljs-subst">$(dpkg --print-architecture)</span> \</span><br><span class="hljs-string">  signed-by=/etc/apt/keyrings/docker.gpg] \</span><br><span class="hljs-string">  https://download.docker.com/linux/ubuntu \</span><br><span class="hljs-string">  <span class="hljs-subst">$(lsb_release -cs)</span> stable&quot;</span> | \<br>  <span class="hljs-built_in">sudo</span> <span class="hljs-built_in">tee</span> /etc/apt/sources.list.d/docker.list &gt; /dev/null<br><br><span class="hljs-comment">## 安装 Docker Engine</span><br><span class="hljs-built_in">sudo</span> apt update<br><span class="hljs-built_in">sudo</span> apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin<br><br><span class="hljs-comment">## 将当前用户加入 docker 用户组（避免每次使用 sudo），如果你是root就可以忽略了</span><br><span class="hljs-built_in">sudo</span> usermod -aG docker <span class="hljs-variable">$USER</span><br>newgrp docker<br><br><br><span class="hljs-comment"># 启动</span><br>systemctl start docker<br><span class="hljs-comment"># 开机自启</span><br>systemctl <span class="hljs-built_in">enable</span> docker<br><br><br><span class="hljs-built_in">sudo</span> vim /etc/docker/daemon.json<br><br><span class="hljs-comment">##加入以下内容</span><br>&#123;<br>   <span class="hljs-string">&quot;registry-mirrors&quot;</span>: [<span class="hljs-string">&quot;http://hub-mirror.c.163.com&quot;</span>],<br>   <span class="hljs-string">&quot;exec-opts&quot;</span>: [<span class="hljs-string">&quot;native.cgroupdriver=systemd&quot;</span>]<br>&#125;<br><br><br><span class="hljs-comment"># 加载</span><br><span class="hljs-built_in">sudo</span> systemctl reload docker<br><br><span class="hljs-comment"># 查看</span><br>systemctl status docker containerd<br><br></code></pre></td></tr></table></figure>
+
+
+
+<p>【温馨提示】dockerd 实际真实调用的还是 containerd 的 api 接口，containerd 是 dockerd 和 runC 之间的一个中间交流组件。所以启动 docker 服务的时候，也会启动 containerd 服务的。</p>
+<p>kubernets 自ｖ 1.24.0 后，就不再使用 docker.shim，替换采用 containerd 作为容器运行时端点。因此需要安装 containerd（在 docker 的基础下安装），上面安装 docker 的时候就自动安装了 containerd 了。这里的 docker 只是作为客户端而已。容器引擎还是 containerd。</p>
+<h2 id="3-配置"><a href="#3-配置" class="headerlink" title="3.配置"></a>3.配置</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 导出默认配置，config.toml这个文件默认是不存在的</span><br><span class="hljs-built_in">sudo</span> containerd config default | <span class="hljs-built_in">sudo</span> <span class="hljs-built_in">tee</span> /etc/containerd/config.toml &gt; /dev/null<br><br><br><span class="hljs-built_in">sudo</span> sed -i <span class="hljs-string">&#x27;s#SystemdCgroup = false#SystemdCgroup = true#g&#x27;</span> /etc/containerd/config.toml<br><br><br><br><br><br><span class="hljs-comment">###下面的步骤是配置代理【可以使用你本机的代理】,推荐配好集群后配置</span><br><span class="hljs-comment">###因为你主机的代理也要配置好，或者如果你有经验也可以直接弄</span><br><span class="hljs-comment">###如果你配置好后，后面就不用担心网络问题</span><br><span class="hljs-comment">###不过为了防止出现其他干扰问题，暂时就不推荐做</span><br><br><br><span class="hljs-comment"># 这个是给bash配置代理</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;export http_proxy=http://192.168.21.1:7890&#x27;</span> &gt;&gt; ~/.bashrc<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;export https_proxy=http://192.168.21.1:7890&#x27;</span> &gt;&gt; ~/.bashrc<br><span class="hljs-built_in">source</span> ~/.bashrc<br><br><span class="hljs-comment"># 这个是给docker配置代理</span><br><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">mkdir</span> -p /etc/systemd/system/docker.service.d<br><span class="hljs-built_in">sudo</span> vim  /etc/systemd/system/docker.service.d/http-proxy.conf<br><br><span class="hljs-comment">## 添加以下内容</span><br>[Service]<br>Environment=<span class="hljs-string">&quot;HTTP_PROXY=http://proxy.example.com&quot;</span><br>Environment=<span class="hljs-string">&quot;HTTPS_PROXY=http://proxy.example.com&quot;</span><br><br><span class="hljs-built_in">sudo</span> systemctl daemon-reload<br><span class="hljs-built_in">sudo</span> systemctl restart docker<br><span class="hljs-built_in">sudo</span> systemctl show --property=Environment docker<br><br><br><span class="hljs-comment"># 这个是给containerd配置代理</span><br><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">mkdir</span> /etc/systemd/system/containerd.service.d/<br><span class="hljs-built_in">sudo</span> vim /etc/systemd/system/containerd.service.d/http-proxy.conf<br><br><span class="hljs-comment">## 添加以下内容</span><br>[Service]<br>Environment=<span class="hljs-string">&quot;HTTP_PROXY=http://proxy.example.com&quot;</span><br>Environment=<span class="hljs-string">&quot;HTTPS_PROXY=http://proxy.example.com&quot;</span><br>systemctl daemon-reload<br>systemctl restart containerd<br></code></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<h2 id="安装cri-dockerd【可忽略，如果要使用docker作为CRI，就需要，但是我还是推荐使用docker底层使用的containerd，也是k8s推荐的】"><a href="#安装cri-dockerd【可忽略，如果要使用docker作为CRI，就需要，但是我还是推荐使用docker底层使用的containerd，也是k8s推荐的】" class="headerlink" title="安装cri-dockerd【可忽略，如果要使用docker作为CRI，就需要，但是我还是推荐使用docker底层使用的containerd，也是k8s推荐的】"></a>安装cri-dockerd【可忽略，如果要使用docker作为CRI，就需要，但是我还是推荐使用docker底层使用的containerd，也是k8s推荐的】</h2><p>Docker Engine 没有实现 <a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/docs/concepts/architecture/cri/">CRI</a>， 而这是容器运行时在 Kubernetes 中工作所需要的。 为此，必须安装一个额外的服务 <a target="_blank" rel="noopener" href="https://github.com/Mirantis/cri-dockerd">cri-dockerd</a>。 cri-dockerd 是一个基于传统的内置 Docker 引擎支持的项目， 它在 1.24 版本从 kubelet 中<a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/dockershim">移除</a>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 下载 cri-dockerd 安装包</span><br>wget https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.17/cri-dockerd_0.3.17.3-0.debian-bookworm_amd64.deb<br><br><span class="hljs-comment">##网络不行的可以在自己的电脑下载，然后使用scp传送</span><br><span class="hljs-comment">##安装的不一定是我这个</span><br><span class="hljs-comment">## https://github.com/Mirantis/cri-dockerd/releases 这里有列，可以去查查自己的机子应该安装什么</span><br><br><span class="hljs-comment"># 安装</span><br><span class="hljs-built_in">sudo</span> dpkg -i cri-dockerd_0.3.17.3-0.debian-bookworm_amd64.deb<br><br><span class="hljs-comment"># 启用并启动 cri-dockerd 服务和 socket</span><br><span class="hljs-built_in">sudo</span> systemctl daemon-reload<br><span class="hljs-built_in">sudo</span> systemctl <span class="hljs-built_in">enable</span> --now cri-docker.service<br><span class="hljs-built_in">sudo</span> systemctl <span class="hljs-built_in">enable</span> --now cri-docker.socket<br><br><span class="hljs-comment"># 验证状态</span><br>systemctl status cri-docker.service<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="4-安装kubeadm-kubelet-kubectl"><a href="#4-安装kubeadm-kubelet-kubectl" class="headerlink" title="4.安装kubeadm kubelet kubectl"></a>4.安装kubeadm kubelet kubectl</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> apt-get update<br><span class="hljs-comment"># apt-transport-https 可能是一个虚拟包（dummy package）；如果是的话，你可以跳过安装这个包</span><br><span class="hljs-built_in">sudo</span> apt-get install -y apt-transport-https ca-certificates curl gpg<br><br><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">mkdir</span> -p -m 755 /etc/apt/keyrings<br><br>curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | <span class="hljs-built_in">sudo</span> gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg<br><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /&#x27;</span> | <span class="hljs-built_in">sudo</span> <span class="hljs-built_in">tee</span> /etc/apt/sources.list.d/kubernetes.list<br><br><span class="hljs-built_in">sudo</span> apt-get update<br><span class="hljs-built_in">sudo</span> apt-get install -y kubelet kubeadm kubectl<br><span class="hljs-built_in">sudo</span> apt-mark hold kubelet kubeadm kubectl<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="5-拉取所需镜像"><a href="#5-拉取所需镜像" class="headerlink" title="5.拉取所需镜像"></a>5.拉取所需镜像</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">## 列出所需镜像</span><br>kubeadm config images list<br><br><span class="hljs-comment">## 我的版本是1.32.3</span><br><span class="hljs-comment">## 所以需要下面的镜像</span><br>registry.k8s.io/kube-apiserver:v1.32.3<br>registry.k8s.io/kube-controller-manager:v1.32.3<br>registry.k8s.io/kube-scheduler:v1.32.3<br>registry.k8s.io/kube-proxy:v1.32.3<br>registry.k8s.io/coredns/coredns:v1.11.3<br>registry.k8s.io/pause:3.10<br>registry.k8s.io/etcd:3.5.16-0<br><br><span class="hljs-comment">## 但是我们肯定是拉不到的，所以得到国内的镜像源拉取，并打tag</span><br><span class="hljs-comment">## 我这里写了个脚本，你可以自行修改</span><br><span class="hljs-comment">#!/bin/bash</span><br><br><span class="hljs-comment"># 定义镜像对应关系（来源镜像 -&gt; 目标镜像）</span><br><span class="hljs-built_in">declare</span> -A images=(<br>  [<span class="hljs-string">&quot;registry.aliyuncs.com/google_containers/kube-apiserver:v1.32.3&quot;</span>]=<span class="hljs-string">&quot;registry.k8s.io/kube-apiserver:v1.32.3&quot;</span><br>  [<span class="hljs-string">&quot;registry.aliyuncs.com/google_containers/kube-controller-manager:v1.32.3&quot;</span>]=<span class="hljs-string">&quot;registry.k8s.io/kube-controller-manager:v1.32.3&quot;</span><br>  [<span class="hljs-string">&quot;registry.aliyuncs.com/google_containers/kube-scheduler:v1.32.3&quot;</span>]=<span class="hljs-string">&quot;registry.k8s.io/kube-scheduler:v1.32.3&quot;</span><br>  [<span class="hljs-string">&quot;registry.aliyuncs.com/google_containers/kube-proxy:v1.32.3&quot;</span>]=<span class="hljs-string">&quot;registry.k8s.io/kube-proxy:v1.32.3&quot;</span><br>  [<span class="hljs-string">&quot;registry.aliyuncs.com/google_containers/pause:3.10&quot;</span>]=<span class="hljs-string">&quot;registry.k8s.io/pause:3.10&quot;</span><br>  [<span class="hljs-string">&quot;registry.aliyuncs.com/google_containers/etcd:3.5.16-0&quot;</span>]=<span class="hljs-string">&quot;registry.k8s.io/etcd:3.5.16-0&quot;</span><br>  [<span class="hljs-string">&quot;registry.aliyuncs.com/google_containers/coredns:v1.11.3&quot;</span>]=<span class="hljs-string">&quot;registry.k8s.io/coredns/coredns:v1.11.3&quot;</span><br>)<br><br><span class="hljs-comment"># 循环打 tag</span><br><span class="hljs-keyword">for</span> src <span class="hljs-keyword">in</span> <span class="hljs-string">&quot;<span class="hljs-variable">$&#123;!images[@]&#125;</span>&quot;</span>; <span class="hljs-keyword">do</span><br>  dest=<span class="hljs-variable">$&#123;images[$src]&#125;</span><br>  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Pulling <span class="hljs-variable">$src</span> ...&quot;</span><br>  docker pull <span class="hljs-string">&quot;<span class="hljs-variable">$src</span>&quot;</span><br>  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Tagging <span class="hljs-variable">$src</span> -&gt; <span class="hljs-variable">$dest</span>&quot;</span><br>  docker tag <span class="hljs-string">&quot;<span class="hljs-variable">$src</span>&quot;</span> <span class="hljs-string">&quot;<span class="hljs-variable">$dest</span>&quot;</span><br><span class="hljs-keyword">done</span><br><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;All tags applied successfully!&quot;</span><br></code></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+<h2 id="6-使用kubeadm创建集群"><a href="#6-使用kubeadm创建集群" class="headerlink" title="6.使用kubeadm创建集群"></a>6.使用kubeadm创建集群</h2><h3 id="6-1-执行kubeadm-init【master结点】"><a href="#6-1-执行kubeadm-init【master结点】" class="headerlink" title="6.1 执行kubeadm init【master结点】"></a>6.1 执行kubeadm init【master结点】</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> kubeadm init \<br>  --apiserver-advertise-address=192.168.21.138  \<br>  --kubernetes-version v1.32.3 \<br>  --service-cidr=10.1.0.0/16 \<br>  --pod-network-cidr=10.244.0.0/16 \<br>  --v=5<br>  <br>  <br>  <br>  <span class="hljs-comment">## --cri-socket unix:///var/run/cri-dockerd.sock 如果你使用的是docker作为CRI,就必须得加上</span><br>  <br>  <br>  <span class="hljs-comment">## apiserver-advertise-address这个你可以直接填master的IP地址</span><br>  <span class="hljs-comment">## kubernetes-version这个得填你k8s的版本</span><br>  <span class="hljs-comment">## pod-network-cidr 指明 Pod 网络可以使用的 IP 地址段。如果设置了这个参数，控制平面将会为每一个节点自动分配 CIDR，这个值和后面安装网络插件有关</span><br>  <span class="hljs-comment">## cri-socket unix:///var/run/cri-dockerd.sock 这个表明你使用的CRI是cri-dockerd</span><br>  <span class="hljs-comment">## v=5这个是日志等级，方便查看过程</span><br> <br> <br><span class="hljs-built_in">sudo</span> kubeadm reset <br><span class="hljs-comment">## --cri-socket unix:///var/run/cri-dockerd.sock 如果你使用的是docker作为CRI,就必须得加上</span><br><br><br><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">rm</span> -fr ~/.kube/  /etc/kubernetes/* var/lib/etcd/*<br></code></pre></td></tr></table></figure>
+
+
+
+<p>成功的话就是下面的输出</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs bash">Your Kubernetes control-plane has initialized successfully!<br><br>To start using your cluster, you need to run the following as a regular user:<br><br>  <span class="hljs-built_in">mkdir</span> -p <span class="hljs-variable">$HOME</span>/.kube<br>  <span class="hljs-built_in">sudo</span> <span class="hljs-built_in">cp</span> -i /etc/kubernetes/admin.conf <span class="hljs-variable">$HOME</span>/.kube/config<br>  <span class="hljs-built_in">sudo</span> <span class="hljs-built_in">chown</span> $(<span class="hljs-built_in">id</span> -u):$(<span class="hljs-built_in">id</span> -g) <span class="hljs-variable">$HOME</span>/.kube/config<br><br>Alternatively, <span class="hljs-keyword">if</span> you are the root user, you can run:<br><br>  <span class="hljs-built_in">export</span> KUBECONFIG=/etc/kubernetes/admin.conf<br><br>You should now deploy a pod network to the cluster.<br>Run <span class="hljs-string">&quot;kubectl apply -f [podnetwork].yaml&quot;</span> with one of the options listed at:<br>  https://kubernetes.io/docs/concepts/cluster-administration/addons/<br><br>Then you can <span class="hljs-built_in">join</span> any number of worker nodes by running the following on each as root:<br><br><span class="hljs-comment">##  这下面的记下来，从节点加入集群需要这个</span><br>kubeadm <span class="hljs-built_in">join</span> 192.168.21.138:6443 --token j9z31g.i9ghsxhm9i1e368k \<br>	--discovery-token-ca-cert-hash sha256:65a4590eef8805dc978e9ee3c3224fa3d07cc0c8d02ab358a0a0164186a567b5 <br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="6-2-配置环境变量"><a href="#6-2-配置环境变量" class="headerlink" title="6.2 配置环境变量"></a>6.2 配置环境变量</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">mkdir</span> -p <span class="hljs-variable">$HOME</span>/.kube<br><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">cp</span> -i /etc/kubernetes/admin.conf <span class="hljs-variable">$HOME</span>/.kube/config<br><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">chown</span> $(<span class="hljs-built_in">id</span> -u):$(<span class="hljs-built_in">id</span> -g) <span class="hljs-variable">$HOME</span>/.kube/config<br><br><span class="hljs-comment">## 如果你是 root 用户，则可以继续运行：</span><br><span class="hljs-built_in">export</span> KUBECONFIG=/etc/kubernetes/admin.conf<br></code></pre></td></tr></table></figure>
+
+
+
+<p>查看结点</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">kubectl get nodes<br><span class="hljs-comment">##执行完后发现只有master一个结点，因为其他结点还没加入，而且</span><br><span class="hljs-comment">##注意到master的状态是NotReady这个是由于网络插件没安装导致的</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="6-3-node结点加入"><a href="#6-3-node结点加入" class="headerlink" title="6.3 node结点加入"></a>6.3 node结点加入</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> kubeadm <span class="hljs-built_in">join</span> 192.168.21.138:6443 --token j9z31g.i9ghsxhm9i1e368k \<br>        --discovery-token-ca-cert-hash sha256:65a4590eef8805dc978e9ee3c3224fa3d07cc0c8d02ab358a0a0164186a567b5 \<br>        <br>       <span class="hljs-comment">## --cri-socket unix:///var/run/cri-dockerd.sock  ##如果使用docker作为CRI则需要</span><br></code></pre></td></tr></table></figure>
+
+<p>执行后，就可以在<code>master</code>结点使用<code>kubectl get nodes</code>发现结点已经加入了</p>
+<h3 id="6-4-安装Pod网络插件"><a href="#6-4-安装Pod网络插件" class="headerlink" title="6.4 安装Pod网络插件"></a>6.4 安装Pod网络插件</h3><p>接下来就是安装Pod网络插件（CNI：Container Network Interface）</p>
+<p>这里我们选用<code>flannel</code>作为CNI</p>
+<p>首先我们得先下载<code>kube-flannel.yml</code>，可以去它官网<a target="_blank" rel="noopener" href="https://github.com/flannel-io/flannel#deploying-flannel-manually">flannel</a>下载</p>
+<p>这里我也贴出来文件内容，你也可以直接复制</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">Namespace</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">labels:</span><br>    <span class="hljs-attr">k8s-app:</span> <span class="hljs-string">flannel</span><br>    <span class="hljs-attr">pod-security.kubernetes.io/enforce:</span> <span class="hljs-string">privileged</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">kube-flannel</span><br><span class="hljs-meta">---</span><br><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">ServiceAccount</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">labels:</span><br>    <span class="hljs-attr">k8s-app:</span> <span class="hljs-string">flannel</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">flannel</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">kube-flannel</span><br><span class="hljs-meta">---</span><br><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">ClusterRole</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">labels:</span><br>    <span class="hljs-attr">k8s-app:</span> <span class="hljs-string">flannel</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">flannel</span><br><span class="hljs-attr">rules:</span><br><span class="hljs-bullet">-</span> <span class="hljs-attr">apiGroups:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;&quot;</span><br>  <span class="hljs-attr">resources:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">pods</span><br>  <span class="hljs-attr">verbs:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">get</span><br><span class="hljs-bullet">-</span> <span class="hljs-attr">apiGroups:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;&quot;</span><br>  <span class="hljs-attr">resources:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">nodes</span><br>  <span class="hljs-attr">verbs:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">get</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">list</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">watch</span><br><span class="hljs-bullet">-</span> <span class="hljs-attr">apiGroups:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;&quot;</span><br>  <span class="hljs-attr">resources:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">nodes/status</span><br>  <span class="hljs-attr">verbs:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">patch</span><br><span class="hljs-meta">---</span><br><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">rbac.authorization.k8s.io/v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">ClusterRoleBinding</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">labels:</span><br>    <span class="hljs-attr">k8s-app:</span> <span class="hljs-string">flannel</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">flannel</span><br><span class="hljs-attr">roleRef:</span><br>  <span class="hljs-attr">apiGroup:</span> <span class="hljs-string">rbac.authorization.k8s.io</span><br>  <span class="hljs-attr">kind:</span> <span class="hljs-string">ClusterRole</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">flannel</span><br><span class="hljs-attr">subjects:</span><br><span class="hljs-bullet">-</span> <span class="hljs-attr">kind:</span> <span class="hljs-string">ServiceAccount</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">flannel</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">kube-flannel</span><br><span class="hljs-meta">---</span><br><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span><br><span class="hljs-attr">data:</span><br>  <span class="hljs-attr">cni-conf.json:</span> <span class="hljs-string">|</span><br><span class="hljs-string">    &#123;</span><br><span class="hljs-string">      &quot;name&quot;: &quot;cbr0&quot;,</span><br><span class="hljs-string">      &quot;cniVersion&quot;: &quot;0.3.1&quot;,</span><br><span class="hljs-string">      &quot;plugins&quot;: [</span><br><span class="hljs-string">        &#123;</span><br><span class="hljs-string">          &quot;type&quot;: &quot;flannel&quot;,</span><br><span class="hljs-string">          &quot;delegate&quot;: &#123;</span><br><span class="hljs-string">            &quot;hairpinMode&quot;: true,</span><br><span class="hljs-string">            &quot;isDefaultGateway&quot;: true</span><br><span class="hljs-string">          &#125;</span><br><span class="hljs-string">        &#125;,</span><br><span class="hljs-string">        &#123;</span><br><span class="hljs-string">          &quot;type&quot;: &quot;portmap&quot;,</span><br><span class="hljs-string">          &quot;capabilities&quot;: &#123;</span><br><span class="hljs-string">            &quot;portMappings&quot;: true</span><br><span class="hljs-string">          &#125;</span><br><span class="hljs-string">        &#125;</span><br><span class="hljs-string">      ]</span><br><span class="hljs-string">    &#125;</span><br><span class="hljs-string"></span>  <span class="hljs-attr">net-conf.json:</span> <span class="hljs-string">|</span><br><span class="hljs-string">    &#123;</span><br><span class="hljs-string">      &quot;Network&quot;: &quot;10.244.0.0/16&quot;,</span><br><span class="hljs-string">      &quot;EnableNFTables&quot;: false,</span><br><span class="hljs-string">      &quot;Backend&quot;: &#123;</span><br><span class="hljs-string">        &quot;Type&quot;: &quot;vxlan&quot;</span><br><span class="hljs-string">      &#125;</span><br><span class="hljs-string">    &#125;</span><br><span class="hljs-string"></span><span class="hljs-attr">kind:</span> <span class="hljs-string">ConfigMap</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">labels:</span><br>    <span class="hljs-attr">app:</span> <span class="hljs-string">flannel</span><br>    <span class="hljs-attr">k8s-app:</span> <span class="hljs-string">flannel</span><br>    <span class="hljs-attr">tier:</span> <span class="hljs-string">node</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">kube-flannel-cfg</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">kube-flannel</span><br><span class="hljs-meta">---</span><br><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span><br><span class="hljs-attr">kind:</span> <span class="hljs-string">DaemonSet</span><br><span class="hljs-attr">metadata:</span><br>  <span class="hljs-attr">labels:</span><br>    <span class="hljs-attr">app:</span> <span class="hljs-string">flannel</span><br>    <span class="hljs-attr">k8s-app:</span> <span class="hljs-string">flannel</span><br>    <span class="hljs-attr">tier:</span> <span class="hljs-string">node</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">kube-flannel-ds</span><br>  <span class="hljs-attr">namespace:</span> <span class="hljs-string">kube-flannel</span><br><span class="hljs-attr">spec:</span><br>  <span class="hljs-attr">selector:</span><br>    <span class="hljs-attr">matchLabels:</span><br>      <span class="hljs-attr">app:</span> <span class="hljs-string">flannel</span><br>      <span class="hljs-attr">k8s-app:</span> <span class="hljs-string">flannel</span><br>  <span class="hljs-attr">template:</span><br>    <span class="hljs-attr">metadata:</span><br>      <span class="hljs-attr">labels:</span><br>        <span class="hljs-attr">app:</span> <span class="hljs-string">flannel</span><br>        <span class="hljs-attr">k8s-app:</span> <span class="hljs-string">flannel</span><br>        <span class="hljs-attr">tier:</span> <span class="hljs-string">node</span><br>    <span class="hljs-attr">spec:</span><br>      <span class="hljs-attr">affinity:</span><br>        <span class="hljs-attr">nodeAffinity:</span><br>          <span class="hljs-attr">requiredDuringSchedulingIgnoredDuringExecution:</span><br>            <span class="hljs-attr">nodeSelectorTerms:</span><br>            <span class="hljs-bullet">-</span> <span class="hljs-attr">matchExpressions:</span><br>              <span class="hljs-bullet">-</span> <span class="hljs-attr">key:</span> <span class="hljs-string">kubernetes.io/os</span><br>                <span class="hljs-attr">operator:</span> <span class="hljs-string">In</span><br>                <span class="hljs-attr">values:</span><br>                <span class="hljs-bullet">-</span> <span class="hljs-string">linux</span><br>      <span class="hljs-attr">containers:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">args:</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-string">--ip-masq</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-string">--kube-subnet-mgr</span><br>        <span class="hljs-attr">command:</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-string">/opt/bin/flanneld</span><br>        <span class="hljs-attr">env:</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">POD_NAME</span><br>          <span class="hljs-attr">valueFrom:</span><br>            <span class="hljs-attr">fieldRef:</span><br>              <span class="hljs-attr">fieldPath:</span> <span class="hljs-string">metadata.name</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">POD_NAMESPACE</span><br>          <span class="hljs-attr">valueFrom:</span><br>            <span class="hljs-attr">fieldRef:</span><br>              <span class="hljs-attr">fieldPath:</span> <span class="hljs-string">metadata.namespace</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">EVENT_QUEUE_DEPTH</span><br>          <span class="hljs-attr">value:</span> <span class="hljs-string">&quot;5000&quot;</span><br>        <span class="hljs-attr">image:</span> <span class="hljs-string">ghcr.io/flannel-io/flannel:v0.26.6</span><br>        <span class="hljs-attr">name:</span> <span class="hljs-string">kube-flannel</span><br>        <span class="hljs-attr">resources:</span><br>          <span class="hljs-attr">requests:</span><br>            <span class="hljs-attr">cpu:</span> <span class="hljs-string">100m</span><br>            <span class="hljs-attr">memory:</span> <span class="hljs-string">50Mi</span><br>        <span class="hljs-attr">securityContext:</span><br>          <span class="hljs-attr">capabilities:</span><br>            <span class="hljs-attr">add:</span><br>            <span class="hljs-bullet">-</span> <span class="hljs-string">NET_ADMIN</span><br>            <span class="hljs-bullet">-</span> <span class="hljs-string">NET_RAW</span><br>          <span class="hljs-attr">privileged:</span> <span class="hljs-literal">false</span><br>        <span class="hljs-attr">volumeMounts:</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/run/flannel</span><br>          <span class="hljs-attr">name:</span> <span class="hljs-string">run</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/etc/kube-flannel/</span><br>          <span class="hljs-attr">name:</span> <span class="hljs-string">flannel-cfg</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/run/xtables.lock</span><br>          <span class="hljs-attr">name:</span> <span class="hljs-string">xtables-lock</span><br>      <span class="hljs-attr">hostNetwork:</span> <span class="hljs-literal">true</span><br>      <span class="hljs-attr">initContainers:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">args:</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-string">-f</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-string">/flannel</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-string">/opt/cni/bin/flannel</span><br>        <span class="hljs-attr">command:</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-string">cp</span><br>        <span class="hljs-attr">image:</span> <span class="hljs-string">ghcr.io/flannel-io/flannel-cni-plugin:v1.6.2-flannel1</span><br>        <span class="hljs-attr">name:</span> <span class="hljs-string">install-cni-plugin</span><br>        <span class="hljs-attr">volumeMounts:</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/opt/cni/bin</span><br>          <span class="hljs-attr">name:</span> <span class="hljs-string">cni-plugin</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">args:</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-string">-f</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-string">/etc/kube-flannel/cni-conf.json</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-string">/etc/cni/net.d/10-flannel.conflist</span><br>        <span class="hljs-attr">command:</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-string">cp</span><br>        <span class="hljs-attr">image:</span> <span class="hljs-string">ghcr.io/flannel-io/flannel:v0.26.6</span><br>        <span class="hljs-attr">name:</span> <span class="hljs-string">install-cni</span><br>        <span class="hljs-attr">volumeMounts:</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/etc/cni/net.d</span><br>          <span class="hljs-attr">name:</span> <span class="hljs-string">cni</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/etc/kube-flannel/</span><br>          <span class="hljs-attr">name:</span> <span class="hljs-string">flannel-cfg</span><br>      <span class="hljs-attr">priorityClassName:</span> <span class="hljs-string">system-node-critical</span><br>      <span class="hljs-attr">serviceAccountName:</span> <span class="hljs-string">flannel</span><br>      <span class="hljs-attr">tolerations:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">effect:</span> <span class="hljs-string">NoSchedule</span><br>        <span class="hljs-attr">operator:</span> <span class="hljs-string">Exists</span><br>      <span class="hljs-attr">volumes:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">hostPath:</span><br>          <span class="hljs-attr">path:</span> <span class="hljs-string">/run/flannel</span><br>        <span class="hljs-attr">name:</span> <span class="hljs-string">run</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">hostPath:</span><br>          <span class="hljs-attr">path:</span> <span class="hljs-string">/opt/cni/bin</span><br>        <span class="hljs-attr">name:</span> <span class="hljs-string">cni-plugin</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">hostPath:</span><br>          <span class="hljs-attr">path:</span> <span class="hljs-string">/etc/cni/net.d</span><br>        <span class="hljs-attr">name:</span> <span class="hljs-string">cni</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">configMap:</span><br>          <span class="hljs-attr">name:</span> <span class="hljs-string">kube-flannel-cfg</span><br>        <span class="hljs-attr">name:</span> <span class="hljs-string">flannel-cfg</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">hostPath:</span><br>          <span class="hljs-attr">path:</span> <span class="hljs-string">/run/xtables.lock</span><br>          <span class="hljs-attr">type:</span> <span class="hljs-string">FileOrCreate</span><br>        <span class="hljs-attr">name:</span> <span class="hljs-string">xtables-lock</span><br><br></code></pre></td></tr></table></figure>
+
+
+
+<p>我们可以从文件里看到，这个需要下两个镜像<code>ghcr.io/flannel-io/flannel:v0.26.6</code>和<code>ghcr.io/flannel-io/flannel-cni-plugin:v1.6.2-flannel1</code></p>
+<p>由于网络问题，这个我们可以考虑从自己的电脑上拉取镜像然后传到服务器上</p>
+<p>可能用到的命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">## 将镜像打包成tar文件</span><br>docker save -o xxx.tar xxx:tag<br><br><span class="hljs-comment">## 将文件发送到服务器上</span><br>scp xxx.tar user@ip:/path/<br><br><span class="hljs-comment">## 解析tar文件，得到镜像</span><br>docker load -i xxx.tar<br></code></pre></td></tr></table></figure>
+
+
+
+<p>这里还要强调下文件里的一个地方</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">net-conf.json:</span> <span class="hljs-string">|</span><br><span class="hljs-string">    &#123;</span><br><span class="hljs-string">      &quot;Network&quot;: &quot;10.244.0.0/16&quot;,</span><br><span class="hljs-string">      &quot;EnableNFTables&quot;: false,</span><br><span class="hljs-string">      &quot;Backend&quot;: &#123;</span><br><span class="hljs-string">        &quot;Type&quot;: &quot;vxlan&quot;</span><br><span class="hljs-string">      &#125;</span><br><span class="hljs-string">    &#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>这个<code>Network</code>应该和前面的<code>kubeadm init</code>指定的<code>pod-network-cidr</code>保持一致</p>
+<p>前提工作做好后，就可以执行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">kubectl apply -f kube-flannel.yml<br></code></pre></td></tr></table></figure>
+
+
+
+<p>然后执行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">kubectl  get pods -A<br></code></pre></td></tr></table></figure>
+
+
+
+<p>然后你应该就可以看到</p>
+<p><img src="/images/image-20250409130854019.png" alt="image-20250409130854019"></p>
+<p>可以看到flannel插件已经安装好了，由于coredns的状态和网络插件息息相关，所以flannel插件弄好后，就可以关注coredns</p>
+<p>尤其关注<code>coredns</code>的状态是不是<code>Running</code>，如果是的话就说明你成功了</p>
+<p>如果没成功，多半是<code>Pending</code>，就说明你网络插件安装的有问题，因为这个<code>coredns</code>和网络插件是强绑定的，只有网络插件可用，它才会从<code>Pending</code>转到<code>Running</code></p>
+<p>此时我们再执行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">kubectl get nodes<br></code></pre></td></tr></table></figure>
+
+<p>应该就能看到</p>
+<p><img src="/images/image-20250409131140037.png" alt="image-20250409131140037"></p>
+<p>结点的状态都是Ready了</p>
+<h3 id="6-5-编辑-kube-proxy-配置文件，mode-修改成-ipvs"><a href="#6-5-编辑-kube-proxy-配置文件，mode-修改成-ipvs" class="headerlink" title="6.5 编辑 kube-proxy 配置文件，mode 修改成 ipvs"></a>6.5 编辑 kube-proxy 配置文件，mode 修改成 ipvs</h3><p>接下来这步我不清楚是否必要</p>
+<p>但还是可以做下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">## 编辑 kube-proxy 配置文件，mode 修改成 ipvs</span><br>kubectl edit  configmap -n kube-system  kube-proxy<br></code></pre></td></tr></table></figure>
+
+<p><img src="/images/v2-5a6f422e50e2ddcedc65bf078e3dbf3c_1440w.png" alt="v2-5a6f422e50e2ddcedc65bf078e3dbf3c_1440w"></p>
+<p>重启 kube-proxy</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 先查看</span><br>kubectl get pod -n kube-system | grep kube-proxy<br><span class="hljs-comment"># 再delete让它自拉起</span><br>kubectl get pod -n kube-system | grep kube-proxy |awk <span class="hljs-string">&#x27;&#123;system(&quot;kubectl delete pod &quot;$1&quot; -n kube-system&quot;)&#125;&#x27;</span><br><span class="hljs-comment"># 再查看</span><br>kubectl get pod -n kube-system | grep kube-proxy<br></code></pre></td></tr></table></figure>
+
+
+        </div>
+        
+        <!-- 文章导航 -->
+        <nav class="post-nav">
+          
+          
+            <a class="next" href="../../17/GithubAction%E5%AD%A6%E4%B9%A0/">
+              Github Action学习[简单使用]
+              <i class="fas fa-chevron-right"></i>
+            </a>
+          
+        </nav>
+      </article>
+    </div>
+  </div>
+</div>
+
+    </div>
+    <footer class="footer">
+  <div class="status-bar">
+    <div class="status-item">
+      <i class="fas fa-code-branch"></i>
+      master
+    </div>
+    <div class="status-item">
+      <i class="fas fa-sync"></i>
+      cc
+    </div>
+    <div class="status-item">
+      <i class="fas fa-clock"></i>
+      2025-04-19
+    </div>
+    <div class="status-item">
+      Designed By&nbsp; <a href="https://github.com/B143KC47" target="_blank"> BlackCat</a>
+    </div>
+    <div class="status-item github">
+      <a href="#" target="_blank">
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+    
+    <!-- 全局配置 -->
+    <script>
+      window.HEXO_CONFIG = {
+        language: "zh-CN",
+        root: "/"
+      };
+      
+      // 特定于搜索的配置
+      window.VSC4T_SEARCH = {
+        root: "/"
+      };
+    </script>
+    
+    <script src="//cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/highlight.js@11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <!-- 这里可以放置自定义脚本 -->
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+  // Apply smooth scroll to non-TOC anchor links
+  document.querySelectorAll('a[href^="#"]:not(.toc-link)').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      // Check if querySelector is valid before using it
+      try {
+        const targetSelector = this.getAttribute('href');
+        // Basic check for potentially invalid selectors (though not exhaustive)
+        if (targetSelector && targetSelector.length > 1) { 
+          const targetElement = document.querySelector(targetSelector);
+          if (targetElement) {
+            targetElement.scrollIntoView({
+              behavior: 'smooth'
+            });
+          } else {
+            console.warn('Smooth scroll target not found:', targetSelector);
+          }
+        } else {
+           console.warn('Invalid href for smooth scroll:', targetSelector);
+        }
+      } catch (error) {
+        console.error('Error during smooth scroll:', error, 'Selector:', this.getAttribute('href'));
+        // Fallback or alternative behavior if needed
+        // For example, try getElementById if it's just an ID
+        const targetId = this.getAttribute('href').slice(1);
+        try {
+            const targetElementById = document.getElementById(decodeURIComponent(targetId));
+            if (targetElementById) {
+                targetElementById.scrollIntoView({ behavior: 'smooth' });
+            }
+        } catch (idError) {
+             console.error('Fallback getElementById also failed:', idError);
+        }
+      }
+    });
+  });
+});
+</script>
+<script src="../../../../js/toc.js"></script>
+
+<!-- Scripts -->
+<script>
+  // 将语言文件中的翻译传递给前端
+  window.HEXO_CONFIG = {
+    language: "zh-CN",
+    search_placeholder: "输入关键词搜索...",
+    search_no_results: "未找到相关结果",
+    search_result: "Ergebnis",
+    search_results: "搜索结果",
+    search_results_found: "找到 undefined 个结果",
+    search_in: "搜索范围",
+    search_in_title: "标题",
+    search_in_content: "内容",
+    search_in_tags: "标签",
+    search_in_categories: "分类",
+    search_filters: "搜索过滤器",
+    search_recent: "最近搜索",
+    search_clear: "清除",
+    search_loading: "加载中...",
+    search_error: "加载搜索数据时出错"
+  };
+</script>
+
+
+
+<!-- 添加所有需要的脚本 -->
+<script src="../../../../js/main.js"></script>
+<script src="../../../../js/search.js"></script>
+
+
+    <script>
+      // 移动端菜单切换
+      $(document).ready(function() {
+        $('.mobile-menu-toggle').click(function() {
+          $('.sidebar-explorer').toggleClass('show');
+        });
+      });
+    </script>
+  </body>
+</html>
