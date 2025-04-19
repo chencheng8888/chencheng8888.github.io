@@ -147,15 +147,15 @@
       <div class="section-content">
           <div class="folder">
             <i class="fas fa-folder"></i>
-            <a href="categories/CI-CD/" class="category-link">
-              <span>CI/CD</span>
+            <a href="categories/k8s/" class="category-link">
+              <span>k8s</span>
               <span class="count">(1)</span>
             </a>
           </div>
           <div class="folder">
             <i class="fas fa-folder"></i>
-            <a href="categories/k8s/" class="category-link">
-              <span>k8s</span>
+            <a href="categories/CI-CD/" class="category-link">
+              <span>CI/CD</span>
               <span class="count">(1)</span>
             </a>
           </div>
@@ -261,12 +261,10 @@
 注意，1-5步需要在master和node结点上都运行
 
 ubuntu配置k8s集群
-1.环境配置1.1 配置hosts1sudo vim /etc/hosts
-
-添加你结点的地址信息，比如我的是
-123192.168.21.138 master192.168.21.139 node1192.168.21.140 node2
-
-1.2 关闭swap分区[一定要做]123456sud...
+这里我也推荐下几个我看到的教程，你们失败的话，可以参考
+https://zhuanlan.zhihu.com/p/560557852
+https://www.cnblogs.com/Sunzz/p/15184167.html
+1.环境配置1.1 配置hosts1sudo vim /etc/host...
             </div>
             
             <div class="post-footer">
@@ -440,7 +438,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     language: "zh-CN",
     search_placeholder: "输入关键词搜索...",
     search_no_results: "未找到相关结果",
-    search_result: "resultado",
+    search_result: "نتيجة",
     search_results: "搜索结果",
     search_results_found: "找到 undefined 个结果",
     search_in: "搜索范围",
