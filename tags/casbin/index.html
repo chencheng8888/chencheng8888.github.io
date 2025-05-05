@@ -60,11 +60,11 @@
         <i class="fas fa-archive"></i>
         <span>归档</span>
       </a>
-      <a href="/categories/" class="nav-item active">
+      <a href="/categories/" class="nav-item ">
         <i class="fas fa-folder"></i>
         <span>分类</span>
       </a>
-      <a href="/tags/" class="nav-item ">
+      <a href="/tags/" class="nav-item active">
         <i class="fas fa-tags"></i>
         <span>标签</span>
       </a>
@@ -135,34 +135,40 @@
   <div class="sidebar-explorer">
     <div class="explorer-section">
       <div class="section-header">
-        <i class="fas fa-folder-open"></i>
-        <span>CATEGORIES</span>
+        <i class="fas fa-tags"></i>
+        <span>ALL TAGS</span>
       </div>
       <div class="section-content">
         
-          <a class="category-item " href="../CI-CD/">
-            <i class="fas fa-folder"></i>
-            <span>CI/CD</span>
+          <div class="tag-item ">
+            <i class="fas fa-tag"></i>
+            <a href="../CI-CD/">CI/CD</a>
             <span class="count">(1)</span>
-          </a>
+          </div>
         
-          <a class="category-item " href="../casbin/">
-            <i class="fas fa-folder"></i>
-            <span>casbin</span>
+          <div class="tag-item active">
+            <i class="fas fa-tag"></i>
+            <a href="">casbin</a>
             <span class="count">(1)</span>
-          </a>
+          </div>
         
-          <a class="category-item active" href="">
-            <i class="fas fa-folder"></i>
-            <span>golang</span>
+          <div class="tag-item ">
+            <i class="fas fa-tag"></i>
+            <a href="../golang/">golang</a>
             <span class="count">(1)</span>
-          </a>
+          </div>
         
-          <a class="category-item " href="../k8s/">
-            <i class="fas fa-folder"></i>
-            <span>k8s</span>
+          <div class="tag-item ">
+            <i class="fas fa-tag"></i>
+            <a href="../interface/">interface</a>
             <span class="count">(1)</span>
-          </a>
+          </div>
+        
+          <div class="tag-item ">
+            <i class="fas fa-tag"></i>
+            <a href="../k8s/">k8s</a>
+            <span class="count">(1)</span>
+          </div>
         
       </div>
     </div>
@@ -172,33 +178,62 @@
   <div class="editor-content">
     <div class="tab-bar">
       <div class="tab active">
-        <i class="fas fa-folder-open"></i>
-        <span>golang.md</span>
+        <i class="fas fa-tag"></i>
+        <span>tag: casbin.md</span>
       </div>
     </div>
     
     <div class="content-area">
-      <div class="category-detail">
-        <div class="category-header">
-          <i class="fas fa-folder"></i>
-          <h2>golang</h2>
-          <span class="count">1 posts</span>
-        </div>
-        <div class="category-posts">
-          
-            <div class="post-item">
-              <i class="fas fa-file-alt"></i>
-              <div class="post-info">
-                <a href="../../2025/04/16/%E5%A6%82%E4%BD%95%E7%94%A8interface/">如何用interface</a>
-                <span class="date">
-                  <i class="fas fa-calendar-alt"></i>
-                  2025-04-16
-                </span>
-              </div>
-            </div>
-          
-        </div>
+      <div class="tag-header">
+        <h1>
+          <i class="fas fa-tag"></i>
+          Tag: casbin
+        </h1>
+        <span class="tag-count">1 posts</span>
       </div>
+
+      <div class="posts-container">
+        
+          <div class="post-card">
+            <div class="post-header">
+              <i class="fas fa-file-alt"></i>
+              <span class="post-title">
+                <a href="../../2025/05/05/casbin/">Casbin</a>
+              </span>
+            </div>
+            
+            <div class="post-meta">
+              <span class="date">
+                <i class="fas fa-calendar-alt"></i>
+                2025-05-05
+              </span>
+              
+                <span class="category">
+                  <i class="fas fa-folder"></i>
+                  <a class="category-link" href="../../categories/casbin/">casbin</a>
+                </span>
+              
+            </div>
+            
+            <div class="post-excerpt">
+              Casbin 访问控制框架详解一、PERM 元模型Casbin 的核心是一个基于 PERM 元模型（Policy, Effect, Request, Matcher）的访问控制框架。它将授权逻辑抽象为配置文件，使得切换或升级授权机制只需修改配置即可。开发者可以通过组合不同的模型组件来自定义访问控制策略。
+PERM 模型由四个核心组件构成：
+
+Policy（策略）：定义访问控制规则
+Effect（效...
+            </div>
+            
+            <div class="post-footer">
+              <a href="../../2025/05/05/casbin/" class="read-more">
+                <i class="fas fa-code"></i>
+                Read More
+              </a>
+            </div>
+          </div>
+        
+      </div>
+
+      
     </div>
   </div>
 </div>
