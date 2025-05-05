@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="icon" href="../../../../favicon.png" type="image/x-icon">
+  <title> | 狠狠地学</title>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../../../../css/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <!-- 添加代码高亮样式 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+  <!-- 添加highlight.js库 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>  <link rel="stylesheet" href="../../../../css/code.css">
+  <link rel="stylesheet" href="../../../../css/code-custom.css">
+  <link rel="stylesheet" href="../../../../css/code-languages.css">
+
+  <link rel="stylesheet" href="../../../../css/vscode.css">
+  <link rel="stylesheet" href="../../../../css/post.css">
+  <link rel="stylesheet" href="../../../../css/tag.css">
+  <link rel="stylesheet" href="../../../../css/categories.css">
+  <link rel="stylesheet" href="../../../../css/archive.css">
+  <link rel="stylesheet" href="../../../../css/search.css">
+  <link rel="stylesheet" href="../../../../css/mobile.css">  <link rel="stylesheet" href="../../../../css/responsive.css">
+  <link rel="stylesheet" href="../../../../css/elements.css">
+
+  <!-- 添加 JetBrains Mono 字体 -->  
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Add any custom head content here -->
+
+  <script src="../../../../js/explorer.js"></script>
+  <script src="../../../../js/code-copy.js"></script>
+  <script src="../../../../js/code-enhance.js"></script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+  <body>
+    <div class="wrapper">
+      <div class="mobile-menu-toggle">
+        <i class="fas fa-bars"></i>
+      </div>
+      <header class="vs-header">
+  <nav class="vs-nav">
+    <div class="nav-left">
+      <a href="/" class="nav-brand">
+        <i class="fas fa-terminal"></i>
+        狠狠地学
+      </a>
+    </div>
+    
+    <div class="nav-right">
+      <a href="/" class="nav-item ">
+        <i class="fas fa-home"></i>
+        <span>首页</span>
+      </a>
+      <a href="/archives/" class="nav-item ">
+        <i class="fas fa-archive"></i>
+        <span>归档</span>
+      </a>
+      <a href="/categories/" class="nav-item ">
+        <i class="fas fa-folder"></i>
+        <span>分类</span>
+      </a>
+      <a href="/tags/" class="nav-item ">
+        <i class="fas fa-tags"></i>
+        <span>标签</span>
+      </a>
+      <a href="/search/" class="nav-item ">
+        <i class="fas fa-search"></i>
+        <span>搜索</span>
+      </a>
+      <a href="/about/" class="nav-item ">
+        <i class="fas fa-info-circle"></i>
+        <span>关于</span>
+      </a>
+    </div>
+  </nav>
+</header>
+
+<script>
+  function smoothScroll(event, target) {
+    event.preventDefault();
+    const targetId = target.substring(target.indexOf('#') + 1);
+    const targetElement = document.getElementById(targetId);
+
+    if (targetElement) {
+      window.scrollTo({
+        top: targetElement.offsetTop - 50, // 调整偏移量
+        behavior: 'smooth'
+      });
+    } else {
+      window.location.href = target;
+    }
+  }
+
+  window.addEventListener('scroll', function() {
+    const header = document.querySelector('.vs-header');
+    const nav = document.querySelector('.vs-nav');
+    const scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+    
+    nav.style.setProperty('--scroll-percent', `${scrollPercent}%`);
+    
+    if (window.scrollY > 0) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
+  });
+
+  // 添加标签页切换动画
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+      const ripple = document.createElement('span');
+      ripple.classList.add('nav-ripple');
+      this.appendChild(ripple);
+      
+      const rect = this.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      ripple.style.left = `${x}px`;
+      ripple.style.top = `${y}px`;
+      
+      setTimeout(() => ripple.remove(), 1000);
+    });
+  });
+</script>
+
+
+<div class="vscode-container">
+  <!-- 左侧资源管理器 -->
+  <div class="sidebar-explorer">
+    <!-- TOC导航 -->
+    <div class="explorer-section">
+      <div class="section-header">
+        <i class="fas fa-list"></i>
+        <span>TABLE OF CONTENTS</span>
+      </div>
+      <div class="section-content">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Casbin-%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6%E6%A1%86%E6%9E%B6%E8%AF%A6%E8%A7%A3"><span class="toc-text">Casbin 访问控制框架详解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81PERM-%E5%85%83%E6%A8%A1%E5%9E%8B"><span class="toc-text">一、PERM 元模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Request-%E8%AF%B7%E6%B1%82%E5%AE%9A%E4%B9%89"><span class="toc-text">Request - 请求定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Policy-%E7%AD%96%E7%95%A5%E5%AE%9A%E4%B9%89"><span class="toc-text">Policy - 策略定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Matcher-%E5%8C%B9%E9%85%8D%E5%99%A8%E5%AE%9A%E4%B9%89"><span class="toc-text">Matcher - 匹配器定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Effect-%E6%95%88%E6%9E%9C%E5%AE%9A%E4%B9%89"><span class="toc-text">Effect - 效果定义</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B%E5%88%86%E6%9E%90"><span class="toc-text">示例分析</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81ACL%E6%A8%A1%E5%9E%8B%EF%BC%88%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6%E5%88%97%E8%A1%A8%EF%BC%89"><span class="toc-text">二、ACL模型（访问控制列表）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Request-definition"><span class="toc-text">Request definition</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Policy-definition"><span class="toc-text">Policy definition</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Policy-effect"><span class="toc-text">Policy effect</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Matchers"><span class="toc-text">Matchers</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81RBAC%E6%A8%A1%E5%9E%8B%EF%BC%88%E5%9F%BA%E4%BA%8E%E8%A7%92%E8%89%B2%E7%9A%84%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6%EF%BC%89"><span class="toc-text">三、RBAC模型（基于角色的访问控制）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AD%96%E7%95%A5%E8%A7%84%E5%88%99%EF%BC%88%E8%A7%92%E8%89%B2%E7%BA%A7%E5%88%AB%EF%BC%89"><span class="toc-text">策略规则（角色级别）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AA%E4%BD%93%E7%89%B9%E6%9D%83%EF%BC%88ACL%E6%96%B9%E5%BC%8F%EF%BC%89"><span class="toc-text">个体特权（ACL方式）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8%E6%88%B7-%E8%A7%92%E8%89%B2%E7%BB%91%E5%AE%9A"><span class="toc-text">用户-角色绑定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RBAC-with-Pattern-%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="toc-text">RBAC with Pattern 实现方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RBAC-with-Domains-%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="toc-text">RBAC with Domains 实现方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81ABAC%EF%BC%88%E5%9F%BA%E4%BA%8E%E5%B1%9E%E6%80%A7%E7%9A%84%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6%EF%BC%89"><span class="toc-text">四、ABAC（基于属性的访问控制）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ABAC-%E5%AE%9E%E7%8E%B0%E7%A4%BA%E4%BE%8B"><span class="toc-text">ABAC 实现示例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E8%A7%84%E5%88%99%E5%AD%98%E5%82%A8%E4%B8%8E%E9%80%82%E9%85%8D%E5%99%A8"><span class="toc-text">五、规则存储与适配器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B%EF%BC%88GORM%E9%80%82%E9%85%8D%E5%99%A8%EF%BC%89%EF%BC%9A"><span class="toc-text">使用示例（GORM适配器）：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%EF%BC%9A"><span class="toc-text">最佳实践：</span></a></li></ol></li></ol></li></ol>
+      </div>
+    </div>
+    
+    <!-- 同分类文章 -->
+    
+    
+    <!-- 标签列表 -->
+    
+  </div>
+
+  <!-- 主要内容区域 -->
+  <div class="editor-content">
+    <div class="tab-bar">
+      <div class="tab active">
+        <i class="fas fa-file-alt"></i>
+        <span>.md</span>
+      </div>
+    </div>
+    
+    <div class="content-area">
+      <article class="post-content">
+        <div class="post-header">
+          <h1></h1>
+          <div class="post-meta">
+            <span class="date">
+              <i class="fas fa-calendar-alt"></i>
+              2025-05-05
+            </span>            
+            
+          </div>
+        </div>
+        
+        <div class="post-body vscode-markdown">
+          <h1 id="Casbin-访问控制框架详解"><a href="#Casbin-访问控制框架详解" class="headerlink" title="Casbin 访问控制框架详解"></a>Casbin 访问控制框架详解</h1><h2 id="一、PERM-元模型"><a href="#一、PERM-元模型" class="headerlink" title="一、PERM 元模型"></a>一、PERM 元模型</h2><p>Casbin 的核心是一个基于 PERM 元模型（Policy, Effect, Request, Matcher）的访问控制框架。它将授权逻辑抽象为配置文件，使得切换或升级授权机制只需修改配置即可。开发者可以通过组合不同的模型组件来自定义访问控制策略。</p>
+<p>PERM 模型由四个核心组件构成：</p>
+<ul>
+<li><strong>Policy（策略）</strong>：定义访问控制规则</li>
+<li><strong>Effect（效果）</strong>：定义规则匹配后的决策逻辑  </li>
+<li><strong>Request（请求）</strong>：定义访问请求的格式</li>
+<li><strong>Matcher（匹配器）</strong>：定义请求与策略的匹配规则</li>
+</ul>
+<p>这些组件共同描述了系统中主体（用户）与资源之间的访问控制关系。</p>
+<h3 id="Request-请求定义"><a href="#Request-请求定义" class="headerlink" title="Request - 请求定义"></a>Request - 请求定义</h3><p>请求定义了访问控制系统的输入格式，通常是一个三元组：</p>
+<ul>
+<li><strong>sub (subject)</strong>：访问主体，通常是用户或角色</li>
+<li><strong>obj (object)</strong>：被访问的资源  </li>
+<li><strong>act (action)</strong>：请求的操作类型</li>
+</ul>
+<p>在配置文件中表示为：<code>r = sub, obj, act</code>。例如一个读取文件的请求可以表示为 <code>(alice, data1, read)</code>。</p>
+<h3 id="Policy-策略定义"><a href="#Policy-策略定义" class="headerlink" title="Policy - 策略定义"></a>Policy - 策略定义</h3><p>策略是Casbin中的核心规则集合，定义了具体的访问控制逻辑。策略规则有两种基本格式：</p>
+<ol>
+<li>基础格式：<code>p = sub, obj, act</code></li>
+<li>带决策结果的格式：<code>p = sub, obj, act, eft</code> (eft表示effect)</li>
+</ol>
+<p>重要说明：</p>
+<ul>
+<li>如果未定义eft字段，则默认策略结果为allow（允许）</li>
+<li>每条策略明确规定了哪些主体(sub)可以对哪些资源(obj)执行什么操作(act)</li>
+<li>策略可以存储在文件或数据库中，支持多种存储适配器</li>
+</ul>
+<h3 id="Matcher-匹配器定义"><a href="#Matcher-匹配器定义" class="headerlink" title="Matcher - 匹配器定义"></a>Matcher - 匹配器定义</h3><p>匹配器是Casbin的核心决策引擎，定义了请求与策略的匹配规则。一个典型的匹配器示例如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs conf">m = r.sub == p.sub &amp;&amp; r.obj == p.obj &amp;&amp; r.act == p.act<br></code></pre></td></tr></table></figure>
+
+<p>工作原理：</p>
+<ol>
+<li>当请求进入时，Casbin会将请求(r)与所有策略(p)逐一比对</li>
+<li>使用匹配器(m)中的逻辑表达式判断请求是否符合当前策略</li>
+<li>如果匹配成功，则返回该策略的决策结果(p.eft)</li>
+<li>最终决策由Effect部分根据所有匹配结果综合判断</li>
+</ol>
+<p>匹配器支持丰富的表达式语法，可以组合多种条件进行复杂权限判断。<br>举个例子：<br>🏢 公司权限控制系统：Matcher 例子讲解（优化版）<br>在一家公司中，存在两个文件资源：</p>
+<ul>
+<li>data1：普通资料</li>
+<li>data2：敏感资料<br>✅ 权限策略如下（Policy）：<br>员工（employee）可以查看 data1<br>经理（manager）可以查看 data1<br>经理（manager）可以查看 data2<br>👩‍💼 公司里有两个人：</li>
+<li>小明 是员工（employee）</li>
+<li>小红 是经理（manager）<br>后来，小红出于业务需要，单独授权小明可以查看 data2（即添加了一个针对小明的特殊策略）<br>❓现在的问题<br>我们想判断请求：<br>“小明可以查看 data2 吗？”<br>🧠 结论<br>小明可以访问 data2，因为他被直接授权了这条权限策略。<br>而这个匹配成功是因为：</li>
+<li>r.sub &#x3D;&#x3D; p.sub 成立（小明 &#x3D;&#x3D; 小明）</li>
+<li>r.obj &#x3D;&#x3D; p.obj 成立（data2）</li>
+<li>r.act &#x3D;&#x3D; p.act 成立（read）</li>
+</ul>
+<h3 id="Effect-效果定义"><a href="#Effect-效果定义" class="headerlink" title="Effect - 效果定义"></a>Effect - 效果定义</h3><p>效果定义决定了如何对多个匹配结果进行逻辑组合，生成最终的访问控制决策。常见的效果定义包括：</p>
+<ol>
+<li><strong>允许优先</strong>（Allow-override）：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs conf">e = some(where (p.eft == allow))<br></code></pre></td></tr></table></figure>
+<p>表示只要有一条匹配的策略结果为allow，则最终决策为允许</p>
+<ol start="2">
+<li><strong>拒绝优先</strong>（Deny-override）：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs conf">e = !some(where (p.eft == deny))<br></code></pre></td></tr></table></figure>
+<p>表示只要有一条匹配的策略结果为deny，则最终决策为拒绝</p>
+<ol start="3">
+<li><strong>优先级策略</strong>：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs conf">e = priority(p.eft) || deny<br></code></pre></td></tr></table></figure>
+<p>表示使用策略中定义的优先级来决定</p>
+<p>效果定义支持多种逻辑组合方式，开发者可以根据业务需求选择最适合的策略。</p>
+<h4 id="示例分析"><a href="#示例分析" class="headerlink" title="示例分析"></a>示例分析</h4><p>🧨 如果加一条 deny 策略会怎样？<br>员工不能查看data2<br>显然匹配了多条规则</p>
+<ul>
+<li>员工不能查看data2</li>
+<li>小明可以查看data2<br>假设我们使用这个e &#x3D; some(where(p.eft &#x3D;&#x3D; allow))对匹配器的匹配结果进行逻辑组合判断，即只要有一个规则是允许(allow)，我们就认为最终结果为真<br>显然匹配的规则中有一条是允许的，所以我们认为结果为小明可以查看data2</li>
+</ul>
+<h2 id="二、ACL模型（访问控制列表）"><a href="#二、ACL模型（访问控制列表）" class="headerlink" title="二、ACL模型（访问控制列表）"></a>二、ACL模型（访问控制列表）</h2><p>ACL（Access Control List）是Casbin中最基础的访问控制模型，其特点是为每个主体(subject)直接分配资源权限。模型配置包含以下核心部分：</p>
+<h3 id="Request-definition"><a href="#Request-definition" class="headerlink" title="Request definition"></a>Request definition</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs conf">[request_definition]<br>r = sub, obj, act<br></code></pre></td></tr></table></figure>
+
+<h3 id="Policy-definition"><a href="#Policy-definition" class="headerlink" title="Policy definition"></a>Policy definition</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs conf">[policy_definition]<br>p = sub, obj, act<br></code></pre></td></tr></table></figure>
+
+<h3 id="Policy-effect"><a href="#Policy-effect" class="headerlink" title="Policy effect"></a>Policy effect</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs conf">[policy_effect]<br>e = some(where (p.eft == allow))<br></code></pre></td></tr></table></figure>
+
+<h3 id="Matchers"><a href="#Matchers" class="headerlink" title="Matchers"></a>Matchers</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs conf">[matchers]<br>m = r.sub == p.sub &amp;&amp; r.obj == p.obj &amp;&amp; r.act == p.act<br></code></pre></td></tr></table></figure>
+
+<p>ACL模型的一个示例策略为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs conf">p, alice, data1, read<br>p, bob, data2, write<br></code></pre></td></tr></table></figure>
+
+<p>这个ACL策略表示：</p>
+<ol>
+<li>alice被授予data1的read权限</li>
+<li>bob被授予data2的write权限</li>
+</ol>
+<p>ACL模型的特点：</p>
+<ul>
+<li>直接为主体(subject)分配资源权限</li>
+<li>权限管理粒度细，但维护成本高</li>
+<li>适合小型系统或简单权限场景</li>
+</ul>
+<p>与之前RBAC例子的对比：</p>
+<ul>
+<li>RBAC通过角色间接授权，ACL直接授权</li>
+<li>ACL需要为每个用户单独设置权限</li>
+<li>当用户权限变更时，ACL需要修改所有相关策略</li>
+</ul>
+<h2 id="三、RBAC模型（基于角色的访问控制）"><a href="#三、RBAC模型（基于角色的访问控制）" class="headerlink" title="三、RBAC模型（基于角色的访问控制）"></a>三、RBAC模型（基于角色的访问控制）</h2><p>在 Casbin 中，RBAC 是在 ACL 基础上发展出来的一种模型。<br>RBAC的核心设计理念是通过角色间接授权，相比ACL的直接授权方式具有以下优势：</p>
+<ol>
+<li><strong>权限管理更高效</strong>：通过角色组织权限，减少重复配置</li>
+<li><strong>职责分离更清晰</strong>：权限与具体用户解耦</li>
+<li><strong>扩展性更强</strong>：用户角色变更只需调整角色绑定</li>
+<li><strong>支持继承</strong>：角色可以继承其他角色的权限</li>
+</ol>
+<p>Casbin支持RBAC与ACL混合使用，既可以通过角色授权，也可以直接为用户分配特殊权限。</p>
+<p>Casbin的RBAC实现具有以下特点：</p>
+<ol>
+<li><strong>支持混合授权</strong>：既可以通过角色授权，也可以直接为用户分配特殊权限</li>
+<li><strong>灵活的策略定义</strong>：策略中的sub可以是用户或角色</li>
+<li><strong>高效的匹配机制</strong>：通过g(r.sub, p.sub)语法实现角色继承关系检查</li>
+</ol>
+<p>在我们的例子中，为小明单独授权data2访问权限展示了Casbin的灵活性：</p>
+<ul>
+<li>主体既可以通过角色获得权限（小明作为employee可以访问data1）</li>
+<li>也可以直接获得特殊权限（小明被单独授权访问data2）<br>那我们直接看看我们之前的例子的严格定义<br>📄 <strong>model.conf</strong></li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs conf">[request_definition]<br>r = sub, obj, act<br><br>[policy_definition]<br>p = sub, obj, act<br><br>[role_definition]<br>g = _, _<br><br>[policy_effect]<br>e = some(where (p.eft == allow))<br><br>[matchers]<br>m = g(r.sub, p.sub) || r.sub == p.sub &amp;&amp; r.obj == p.obj &amp;&amp; r.act == p.act<br></code></pre></td></tr></table></figure>
+<p>✅ <strong>说明：</strong></p>
+<ul>
+<li>r &#x3D; sub, obj, act：请求包括：谁、访问什么、用什么操作。</li>
+<li>p &#x3D; sub, obj, act：策略规则，sub 可以是用户或角色。</li>
+<li>g &#x3D; _, _：用户和角色之间的关系。</li>
+<li>e &#x3D; some(where (p.eft &#x3D;&#x3D; allow))：只要匹配到一条允许规则，就通过。</li>
+<li>matchers 中 (g(r.sub, p.sub) || r.sub &#x3D;&#x3D; p.sub)：<ul>
+<li>支持 RBAC（用户通过角色）✅</li>
+<li>也支持 ACL（用户直接授权）✅<br>📄 policy.csv（或 policy.csv 格式的数据）</li>
+</ul>
+</li>
+</ul>
+<h3 id="策略规则（角色级别）"><a href="#策略规则（角色级别）" class="headerlink" title="策略规则（角色级别）"></a>策略规则（角色级别）</h3><p>p, employee, data1, read<br>p, manager, data1, read<br>p, manager, data2, read</p>
+<h3 id="个体特权（ACL方式）"><a href="#个体特权（ACL方式）" class="headerlink" title="个体特权（ACL方式）"></a>个体特权（ACL方式）</h3><p>p, 小明, data2, read</p>
+<h3 id="用户-角色绑定"><a href="#用户-角色绑定" class="headerlink" title="用户-角色绑定"></a>用户-角色绑定</h3><p>g, 小明, employee<br>g, 小红, manager</p>
+<p>Casbin提供了多种RBAC扩展模型，满足不同场景需求：</p>
+<ol>
+<li><strong>RBAC with Pattern</strong>：</li>
+</ol>
+<ul>
+<li>支持基于模式的资源分组</li>
+<li>使用通配符简化策略配置</li>
+<li>适用于资源数量多且有规律命名的场景</li>
+</ul>
+<ol start="2">
+<li><strong>RBAC with Domains</strong>：</li>
+</ol>
+<ul>
+<li>支持多租户隔离</li>
+<li>用户在不同域可以拥有不同角色</li>
+<li>适用于SaaS等需要租户隔离的系统</li>
+</ul>
+<ol start="3">
+<li><strong>RBAC with Conditions</strong>：</li>
+</ol>
+<ul>
+<li>支持基于条件的动态授权</li>
+<li>可以在匹配器中添加运行时条件判断</li>
+<li>适用于需要上下文感知的权限控制</li>
+</ul>
+<p>下面详细介绍每种变种的实现方式：</p>
+<h3 id="RBAC-with-Pattern-实现方式"><a href="#RBAC-with-Pattern-实现方式" class="headerlink" title="RBAC with Pattern 实现方式"></a>RBAC with Pattern 实现方式</h3><p>模式匹配RBAC通过以下方式简化权限管理：</p>
+<ol>
+<li><strong>模型配置</strong>：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs conf">[matchers]<br>m = g(r.sub, p.sub, r.dom) &amp;&amp; keyMatch2(r.obj, p.obj) &amp;&amp; r.act == p.act<br></code></pre></td></tr></table></figure>
+<p>使用keyMatch2函数实现路径模式匹配</p>
+<ol start="2">
+<li><strong>策略示例</strong>：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs conf">p, alice, /book/*, read<br>g, /book/1, book_group<br>g, /book/2, book_group<br></code></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><strong>核心优势</strong>：</li>
+</ol>
+<ul>
+<li>减少策略条目：1条模式规则替代多条具体规则</li>
+<li>动态适配：自动匹配符合模式的新资源</li>
+<li>简化维护：资源增减无需修改策略</li>
+</ul>
+<ol start="4">
+<li><strong>适用场景</strong>：</li>
+</ol>
+<ul>
+<li>RESTful API路径权限控制</li>
+<li>文件系统目录权限管理</li>
+<li>多层级资源权限分配</li>
+</ul>
+<ol start="5">
+<li><strong>支持的模式语法</strong>：</li>
+</ol>
+<ul>
+<li><code>*</code> 匹配任意字符</li>
+<li><code>:variable</code> 命名变量匹配</li>
+<li>支持正则表达式扩展</li>
+</ul>
+<h3 id="RBAC-with-Domains-实现方式"><a href="#RBAC-with-Domains-实现方式" class="headerlink" title="RBAC with Domains 实现方式"></a>RBAC with Domains 实现方式</h3><p>多租户RBAC通过以下方式实现租户隔离：</p>
+<ol>
+<li><strong>模型配置</strong>：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs conf">[role_definition]<br>g = _, _, _  # 第三个参数表示域/租户<br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><strong>策略示例</strong>：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs conf"># 租户1策略<br>p, admin, tenant1, data1, read<br>g, alice, admin, tenant1<br><br># 租户2策略  <br>p, admin, tenant2, data2, read<br>g, alice, user, tenant2<br></code></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><strong>核心特性</strong>：</li>
+</ol>
+<ul>
+<li>用户在不同租户可拥有不同角色</li>
+<li>权限策略按租户隔离</li>
+<li>支持跨租户的统一管理</li>
+</ul>
+<ol start="4">
+<li><strong>匹配器配置</strong>：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs conf">[matchers]<br>m = g(r.sub, p.sub, r.dom) &amp;&amp; r.dom == p.dom &amp;&amp; r.obj == p.obj &amp;&amp; r.act == p.act<br></code></pre></td></tr></table></figure>
+
+<ol start="5">
+<li><strong>适用场景</strong>：</li>
+</ol>
+<ul>
+<li>SaaS多租户系统</li>
+<li>企业多部门权限隔离</li>
+<li>多云环境权限管理</li>
+</ul>
+<ol start="6">
+<li><strong>优势</strong>：</li>
+</ol>
+<ul>
+<li>简化多租户权限管理</li>
+<li>避免租户间权限干扰</li>
+<li>保持权限配置的灵活性</li>
+</ul>
+<h2 id="四、ABAC（基于属性的访问控制）"><a href="#四、ABAC（基于属性的访问控制）" class="headerlink" title="四、ABAC（基于属性的访问控制）"></a>四、ABAC（基于属性的访问控制）</h2><p>ABAC（Attribute-Based Access Control）是一种基于属性而非固定规则的访问控制模型。相比RBAC和ACL，ABAC具有以下特点：</p>
+<ol>
+<li><strong>动态授权</strong>：权限决策基于运行时属性</li>
+<li><strong>细粒度控制</strong>：支持复杂条件判断</li>
+<li><strong>上下文感知</strong>：可以考虑环境因素</li>
+</ol>
+<p>Casbin的ABAC实现方式：</p>
+<ul>
+<li>使用结构体&#x2F;类实例代替字符串</li>
+<li>通过反射访问对象属性</li>
+<li>支持自定义属性匹配逻辑</li>
+</ul>
+<h3 id="ABAC-实现示例"><a href="#ABAC-实现示例" class="headerlink" title="ABAC 实现示例"></a>ABAC 实现示例</h3><ol>
+<li><strong>模型配置</strong>：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs conf">[matchers]<br>m = r.sub == r.obj.Owner  # 基于Owner属性进行授权<br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><strong>资源结构定义</strong>（Go示例）：</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Document <span class="hljs-keyword">struct</span> &#123;<br>    Path  <span class="hljs-type">string</span> <span class="hljs-comment">// 文档路径</span><br>    Owner <span class="hljs-type">string</span> <span class="hljs-comment">// 文档所有者</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><strong>使用方式</strong>：</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs go">doc := &amp;Document&#123;<br>    Path:  <span class="hljs-string">&quot;/doc/report&quot;</span>,<br>    Owner: <span class="hljs-string">&quot;alice&quot;</span>,<br>&#125;<br><br><span class="hljs-comment">// 授权检查</span><br>allowed, err := e.Enforce(<span class="hljs-string">&quot;alice&quot;</span>, doc, <span class="hljs-string">&quot;read&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<ol start="4">
+<li><strong>核心优势</strong>：</li>
+</ol>
+<ul>
+<li>无需预先定义大量ACL规则</li>
+<li>权限自动适应资源属性变化</li>
+<li>支持更复杂的属性判断逻辑</li>
+</ul>
+<ol start="5">
+<li><strong>典型应用场景</strong>：</li>
+</ol>
+<ul>
+<li>文档管理系统</li>
+<li>资源所有权验证</li>
+<li>基于属性的动态授权</li>
+</ul>
+<h2 id="五、规则存储与适配器"><a href="#五、规则存储与适配器" class="headerlink" title="五、规则存储与适配器"></a>五、规则存储与适配器</h2><p>Casbin支持多种存储后端，通过适配器(Adapter)实现：</p>
+<ol>
+<li><strong>内置适配器</strong>：</li>
+</ol>
+<ul>
+<li>文件适配器（默认）</li>
+<li>内存适配器</li>
+</ul>
+<ol start="2">
+<li><strong>数据库适配器</strong>：</li>
+</ol>
+<ul>
+<li>GORM适配器（支持MySQL&#x2F;PostgreSQL等）</li>
+<li>XORM适配器</li>
+<li>MongoDB适配器</li>
+</ul>
+<ol start="3">
+<li><strong>云服务适配器</strong>：</li>
+</ol>
+<ul>
+<li>Redis适配器</li>
+<li>Etcd适配器</li>
+</ul>
+<ol start="4">
+<li><strong>自定义适配器</strong>：<br>开发者可以轻松实现自己的存储适配器</li>
+</ol>
+<h3 id="使用示例（GORM适配器）："><a href="#使用示例（GORM适配器）：" class="headerlink" title="使用示例（GORM适配器）："></a>使用示例（GORM适配器）：</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// 初始化GORM适配器</span><br>a, _ := gormadapter.NewAdapter(<span class="hljs-string">&quot;mysql&quot;</span>, <span class="hljs-string">&quot;mysql_connection_string&quot;</span>)<br><br><span class="hljs-comment">// 使用适配器创建enforcer</span><br>e, _ := casbin.NewEnforcer(<span class="hljs-string">&quot;model.conf&quot;</span>, a)<br></code></pre></td></tr></table></figure>
+
+<h3 id="最佳实践："><a href="#最佳实践：" class="headerlink" title="最佳实践："></a>最佳实践：</h3><ol>
+<li>生产环境推荐使用数据库适配器</li>
+<li>频繁变更的策略适合使用Redis等内存数据库</li>
+<li>分布式系统建议使用Etcd等分布式存储</li>
+</ol>
+<p>更多存储方案参考官方文档：<a target="_blank" rel="noopener" href="https://casbin.org/zh/docs/overview">https://casbin.org/zh/docs/overview</a></p>
+
+        </div>
+        
+        <!-- 文章导航 -->
+        <nav class="post-nav">
+          
+          
+            <a class="next" href="../../../04/19/k8s_build/">
+              搭建k8s集群
+              <i class="fas fa-chevron-right"></i>
+            </a>
+          
+        </nav>
+      </article>
+    </div>
+  </div>
+</div>
+
+    </div>
+    <footer class="footer">
+  <div class="status-bar">
+    <div class="status-item">
+      <i class="fas fa-code-branch"></i>
+      master
+    </div>
+    <div class="status-item">
+      <i class="fas fa-sync"></i>
+      cc
+    </div>
+    <div class="status-item">
+      <i class="fas fa-clock"></i>
+      2025-05-05
+    </div>
+    <div class="status-item">
+      Designed By&nbsp; <a href="https://github.com/B143KC47" target="_blank"> BlackCat</a>
+    </div>
+    <div class="status-item github">
+      <a href="#" target="_blank">
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+    
+    <!-- 全局配置 -->
+    <script>
+      window.HEXO_CONFIG = {
+        language: "zh-CN",
+        root: "/"
+      };
+      
+      // 特定于搜索的配置
+      window.VSC4T_SEARCH = {
+        root: "/"
+      };
+    </script>
+    
+    <script src="//cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/highlight.js@11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <!-- 这里可以放置自定义脚本 -->
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+  // Apply smooth scroll to non-TOC anchor links
+  document.querySelectorAll('a[href^="#"]:not(.toc-link)').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      // Check if querySelector is valid before using it
+      try {
+        const targetSelector = this.getAttribute('href');
+        // Basic check for potentially invalid selectors (though not exhaustive)
+        if (targetSelector && targetSelector.length > 1) { 
+          const targetElement = document.querySelector(targetSelector);
+          if (targetElement) {
+            targetElement.scrollIntoView({
+              behavior: 'smooth'
+            });
+          } else {
+            console.warn('Smooth scroll target not found:', targetSelector);
+          }
+        } else {
+           console.warn('Invalid href for smooth scroll:', targetSelector);
+        }
+      } catch (error) {
+        console.error('Error during smooth scroll:', error, 'Selector:', this.getAttribute('href'));
+        // Fallback or alternative behavior if needed
+        // For example, try getElementById if it's just an ID
+        const targetId = this.getAttribute('href').slice(1);
+        try {
+            const targetElementById = document.getElementById(decodeURIComponent(targetId));
+            if (targetElementById) {
+                targetElementById.scrollIntoView({ behavior: 'smooth' });
+            }
+        } catch (idError) {
+             console.error('Fallback getElementById also failed:', idError);
+        }
+      }
+    });
+  });
+});
+</script>
+<script src="../../../../js/toc.js"></script>
+
+<!-- Scripts -->
+<script>
+  // 将语言文件中的翻译传递给前端
+  window.HEXO_CONFIG = {
+    language: "zh-CN",
+    search_placeholder: "输入关键词搜索...",
+    search_no_results: "未找到相关结果",
+    search_result: "نتيجة",
+    search_results: "搜索结果",
+    search_results_found: "找到 undefined 个结果",
+    search_in: "搜索范围",
+    search_in_title: "标题",
+    search_in_content: "内容",
+    search_in_tags: "标签",
+    search_in_categories: "分类",
+    search_filters: "搜索过滤器",
+    search_recent: "最近搜索",
+    search_clear: "清除",
+    search_loading: "加载中...",
+    search_error: "加载搜索数据时出错"
+  };
+</script>
+
+
+
+<!-- 添加所有需要的脚本 -->
+<script src="../../../../js/main.js"></script>
+<script src="../../../../js/search.js"></script>
+
+
+    <script>
+      // 移动端菜单切换
+      $(document).ready(function() {
+        $('.mobile-menu-toggle').click(function() {
+          $('.sidebar-explorer').toggleClass('show');
+        });
+      });
+    </script>
+  </body>
+</html>
