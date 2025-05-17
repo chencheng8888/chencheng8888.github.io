@@ -155,7 +155,7 @@
           <div class="tag-item active">
             <i class="fas fa-tag"></i>
             <a href="">golang</a>
-            <span class="count">(1)</span>
+            <span class="count">(2)</span>
           </div>
         
           <div class="tag-item ">
@@ -167,6 +167,12 @@
           <div class="tag-item ">
             <i class="fas fa-tag"></i>
             <a href="../k8s/">k8s</a>
+            <span class="count">(1)</span>
+          </div>
+        
+          <div class="tag-item ">
+            <i class="fas fa-tag"></i>
+            <a href="../singleflight/">singleflight</a>
             <span class="count">(1)</span>
           </div>
         
@@ -189,10 +195,47 @@
           <i class="fas fa-tag"></i>
           Tag: golang
         </h1>
-        <span class="tag-count">1 posts</span>
+        <span class="tag-count">2 posts</span>
       </div>
 
       <div class="posts-container">
+        
+          <div class="post-card">
+            <div class="post-header">
+              <i class="fas fa-file-alt"></i>
+              <span class="post-title">
+                <a href="../../2025/05/17/singleflight%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/">singleflight源码解读</a>
+              </span>
+            </div>
+            
+            <div class="post-meta">
+              <span class="date">
+                <i class="fas fa-calendar-alt"></i>
+                2025-05-17
+              </span>
+              
+                <span class="category">
+                  <i class="fas fa-folder"></i>
+                  <a class="category-link" href="../../categories/golang/">golang</a>
+                </span>
+              
+            </div>
+            
+            <div class="post-excerpt">
+              singleflight源码解读使用Singleflight的目的：解决缓存击穿
+什么是缓存击穿？缓存击穿简单来说，就是热点Key失效后，如果突然出现大量请求就会直达数据库，造成数据库负载升高
+可能想的一个解决办法是，只允许一个请求访问数据库，并把数据回填到缓存中，后续请求访问缓存即可
+而singleflight基本就是这个思路，多个并发请求到来，只有第一个协程执行任务，在将结果复用给其他协程
+代...
+            </div>
+            
+            <div class="post-footer">
+              <a href="../../2025/05/17/singleflight%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/" class="read-more">
+                <i class="fas fa-code"></i>
+                Read More
+              </a>
+            </div>
+          </div>
         
           <div class="post-card">
             <div class="post-header">
@@ -250,7 +293,7 @@ go 允许不带任何方法的 ...
     </div>
     <div class="status-item">
       <i class="fas fa-clock"></i>
-      2025-05-05
+      2025-05-17
     </div>
     <div class="status-item">
       Designed By&nbsp; <a href="https://github.com/B143KC47" target="_blank"> BlackCat</a>
@@ -331,7 +374,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     language: "zh-CN",
     search_placeholder: "输入关键词搜索...",
     search_no_results: "未找到相关结果",
-    search_result: "نتيجة",
+    search_result: "Ergebnis",
     search_results: "搜索结果",
     search_results_found: "找到 undefined 个结果",
     search_in: "搜索范围",

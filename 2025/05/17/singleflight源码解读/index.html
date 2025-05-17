@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="icon" href="../../../../favicon.png" type="image/x-icon">
+  <title>singleflight源码解读 | 狠狠地学</title>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../../../../css/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <!-- 添加代码高亮样式 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+  <!-- 添加highlight.js库 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>  <link rel="stylesheet" href="../../../../css/code.css">
+  <link rel="stylesheet" href="../../../../css/code-custom.css">
+  <link rel="stylesheet" href="../../../../css/code-languages.css">
+
+  <link rel="stylesheet" href="../../../../css/vscode.css">
+  <link rel="stylesheet" href="../../../../css/post.css">
+  <link rel="stylesheet" href="../../../../css/tag.css">
+  <link rel="stylesheet" href="../../../../css/categories.css">
+  <link rel="stylesheet" href="../../../../css/archive.css">
+  <link rel="stylesheet" href="../../../../css/search.css">
+  <link rel="stylesheet" href="../../../../css/mobile.css">  <link rel="stylesheet" href="../../../../css/responsive.css">
+  <link rel="stylesheet" href="../../../../css/elements.css">
+
+  <!-- 添加 JetBrains Mono 字体 -->  
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Add any custom head content here -->
+
+  <script src="../../../../js/explorer.js"></script>
+  <script src="../../../../js/code-copy.js"></script>
+  <script src="../../../../js/code-enhance.js"></script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+  <body>
+    <div class="wrapper">
+      <div class="mobile-menu-toggle">
+        <i class="fas fa-bars"></i>
+      </div>
+      <header class="vs-header">
+  <nav class="vs-nav">
+    <div class="nav-left">
+      <a href="/" class="nav-brand">
+        <i class="fas fa-terminal"></i>
+        狠狠地学
+      </a>
+    </div>
+    
+    <div class="nav-right">
+      <a href="/" class="nav-item ">
+        <i class="fas fa-home"></i>
+        <span>首页</span>
+      </a>
+      <a href="/archives/" class="nav-item ">
+        <i class="fas fa-archive"></i>
+        <span>归档</span>
+      </a>
+      <a href="/categories/" class="nav-item ">
+        <i class="fas fa-folder"></i>
+        <span>分类</span>
+      </a>
+      <a href="/tags/" class="nav-item ">
+        <i class="fas fa-tags"></i>
+        <span>标签</span>
+      </a>
+      <a href="/search/" class="nav-item ">
+        <i class="fas fa-search"></i>
+        <span>搜索</span>
+      </a>
+      <a href="/about/" class="nav-item ">
+        <i class="fas fa-info-circle"></i>
+        <span>关于</span>
+      </a>
+    </div>
+  </nav>
+</header>
+
+<script>
+  function smoothScroll(event, target) {
+    event.preventDefault();
+    const targetId = target.substring(target.indexOf('#') + 1);
+    const targetElement = document.getElementById(targetId);
+
+    if (targetElement) {
+      window.scrollTo({
+        top: targetElement.offsetTop - 50, // 调整偏移量
+        behavior: 'smooth'
+      });
+    } else {
+      window.location.href = target;
+    }
+  }
+
+  window.addEventListener('scroll', function() {
+    const header = document.querySelector('.vs-header');
+    const nav = document.querySelector('.vs-nav');
+    const scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+    
+    nav.style.setProperty('--scroll-percent', `${scrollPercent}%`);
+    
+    if (window.scrollY > 0) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
+  });
+
+  // 添加标签页切换动画
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+      const ripple = document.createElement('span');
+      ripple.classList.add('nav-ripple');
+      this.appendChild(ripple);
+      
+      const rect = this.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      ripple.style.left = `${x}px`;
+      ripple.style.top = `${y}px`;
+      
+      setTimeout(() => ripple.remove(), 1000);
+    });
+  });
+</script>
+
+
+<div class="vscode-container">
+  <!-- 左侧资源管理器 -->
+  <div class="sidebar-explorer">
+    <!-- TOC导航 -->
+    <div class="explorer-section">
+      <div class="section-header">
+        <i class="fas fa-list"></i>
+        <span>TABLE OF CONTENTS</span>
+      </div>
+      <div class="section-content">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#singleflight%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB"><span class="toc-text">singleflight源码解读</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF%EF%BC%9F"><span class="toc-text">什么是缓存击穿？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Group"><span class="toc-text">Group</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#call"><span class="toc-text">call</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Do"><span class="toc-text">Do</span></a></li></ol></li></ol>
+      </div>
+    </div>
+    
+    <!-- 同分类文章 -->
+    
+    <div class="explorer-section">
+      <div class="section-header">
+        <i class="fas fa-folder"></i>
+        <span>CATEGORY POSTS</span>
+      </div>
+      <div class="section-content">
+        
+          <div class="file">
+            <i class="fas fa-file-code"></i>
+            <a href="../../../04/16/%E5%A6%82%E4%BD%95%E7%94%A8interface/">如何用interface</a>
+          </div>
+        
+      </div>
+    </div>
+    
+    
+    <!-- 标签列表 -->
+    
+    <div class="explorer-section">
+      <div class="section-header">
+        <i class="fas fa-tags"></i>
+        <span>ARTICLE TAGS</span>
+      </div>
+      <div class="section-content">
+        
+          <div class="tag-item">
+            <i class="fas fa-tag"></i>
+            <a href="../../../../tags/golang/">golang</a>
+            <span class="count">(2)</span>
+          </div>
+        
+          <div class="tag-item">
+            <i class="fas fa-tag"></i>
+            <a href="../../../../tags/singleflight/">singleflight</a>
+            <span class="count">(1)</span>
+          </div>
+        
+      </div>
+    </div>
+    
+  </div>
+
+  <!-- 主要内容区域 -->
+  <div class="editor-content">
+    <div class="tab-bar">
+      <div class="tab active">
+        <i class="fas fa-file-alt"></i>
+        <span>singleflight源码解读.md</span>
+      </div>
+    </div>
+    
+    <div class="content-area">
+      <article class="post-content">
+        <div class="post-header">
+          <h1>singleflight源码解读</h1>
+          <div class="post-meta">
+            <span class="date">
+              <i class="fas fa-calendar-alt"></i>
+              2025-05-17
+            </span>            
+              <span class="categories">
+                <i class="fas fa-folder"></i>
+                <div class="categories-list">
+                  <ul class="category-item-post-list"><li class="category-item-post-list-item"><a class="category-item-post-list-link" href="../../../../categories/golang/">golang</a></li></ul>
+                </div>
+              </span>
+            
+            
+              <span class="tags">
+                <i class="fas fa-tags"></i>
+                <div class="tags-list">
+                  <ul class="tag-item-post-list" itemprop="keywords"><li class="tag-item-post-list-item"><a class="tag-item-post-list-link" href="../../../../tags/golang/" rel="tag">golang</a></li><li class="tag-item-post-list-item"><a class="tag-item-post-list-link" href="../../../../tags/singleflight/" rel="tag">singleflight</a></li></ul>
+                </div>
+              </span>
+            
+          </div>
+        </div>
+        
+        <div class="post-body vscode-markdown">
+          <h1 id="singleflight源码解读"><a href="#singleflight源码解读" class="headerlink" title="singleflight源码解读"></a>singleflight源码解读</h1><p>使用<code>Singleflight</code>的目的：解决缓存击穿</p>
+<h2 id="什么是缓存击穿？"><a href="#什么是缓存击穿？" class="headerlink" title="什么是缓存击穿？"></a>什么是缓存击穿？</h2><p><strong>缓存击穿</strong>简单来说，就是热点Key失效后，如果突然出现大量请求就会直达数据库，造成数据库负载升高</p>
+<p>可能想的一个解决办法是，只允许一个请求访问数据库，并把数据回填到缓存中，后续请求访问缓存即可</p>
+<p>而<code>singleflight</code>基本就是这个思路，多个并发请求到来，只有第一个协程执行任务，在将结果复用给其他协程</p>
+<p><strong>代码</strong></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> main<br><br><span class="hljs-keyword">import</span> (<br>    <span class="hljs-string">&quot;context&quot;</span><br>    <span class="hljs-string">&quot;fmt&quot;</span><br>    <span class="hljs-string">&quot;sync&quot;</span><br>    <span class="hljs-string">&quot;time&quot;</span><br><br>    <span class="hljs-string">&quot;golang.org/x/sync/singleflight&quot;</span><br>)<br><br><span class="hljs-keyword">var</span> cache = sync.Map&#123;&#125;<br><span class="hljs-keyword">var</span> g singleflight.Group<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">getFromCache</span><span class="hljs-params">(key <span class="hljs-type">string</span>)</span></span> (<span class="hljs-type">string</span>, <span class="hljs-type">bool</span>) &#123;<br>    <span class="hljs-keyword">if</span> val, ok := cache.Load(key); ok &#123;<br>        <span class="hljs-keyword">return</span> val.(<span class="hljs-type">string</span>), <span class="hljs-literal">true</span><br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-literal">false</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">setToCache</span><span class="hljs-params">(key, value <span class="hljs-type">string</span>)</span></span> &#123;<br>    cache.Store(key, value)<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">getFromDB</span><span class="hljs-params">(key <span class="hljs-type">string</span>)</span></span> <span class="hljs-type">string</span> &#123;<br>    fmt.Println(<span class="hljs-string">&quot;Querying database for:&quot;</span>, key)<br>    time.Sleep(<span class="hljs-number">100</span> * time.Millisecond) <span class="hljs-comment">// 模拟数据库延迟</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;value_of_&quot;</span> + key<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">GetValue</span><span class="hljs-params">(ctx context.Context, key <span class="hljs-type">string</span>)</span></span> (<span class="hljs-type">string</span>, <span class="hljs-type">error</span>) &#123;<br>    <span class="hljs-keyword">if</span> val, ok := getFromCache(key); ok &#123;<br>        <span class="hljs-keyword">return</span> val, <span class="hljs-literal">nil</span><br>    &#125;<br><br>    <span class="hljs-comment">// 进入 singleflight 防止击穿</span><br>    val, err, _ := g.Do(key, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> (<span class="hljs-keyword">interface</span>&#123;&#125;, <span class="hljs-type">error</span>) &#123;<br>        value := getFromDB(key)<br>        setToCache(key, value)<br>        <span class="hljs-keyword">return</span> value, <span class="hljs-literal">nil</span><br>    &#125;)<br>    <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;&quot;</span>, err<br>    &#125;<br>    <span class="hljs-keyword">return</span> val.(<span class="hljs-type">string</span>), <span class="hljs-literal">nil</span><br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<h2 id="Group"><a href="#Group" class="headerlink" title="Group"></a>Group</h2><p>但是，这次，出于我本人的好奇，我想看看<code>singleflight</code>具体是如何实现的，而且其源码也不长，总共200多行</p>
+<p>首先，我们先看看<code>Group</code> 这个类型，他拥有<code>Do</code>这个方法</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// Group represents a class of work and forms a namespace in</span><br><span class="hljs-comment">// which units of work can be executed with duplicate suppression.</span><br><span class="hljs-comment">// 翻译了下：</span><br><span class="hljs-comment">// 组代表一类工作，并形成一个命名空间，其中的工作单元可以在重复抑制的情况下执行。</span><br><span class="hljs-keyword">type</span> Group <span class="hljs-keyword">struct</span> &#123;<br>        mu sync.Mutex       <span class="hljs-comment">// 由于map不能支持并发读写，所以需要互斥锁来保护m</span><br>        m  <span class="hljs-keyword">map</span>[<span class="hljs-type">string</span>]*call <span class="hljs-comment">// 延迟初始化</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>结构上还是很简单的，大体上就是使用一个<code>map</code>来保存不同key的请求，然后使用<code>sync.Mutex</code>来保护<code>map</code>，<strong>防止并发读写</strong></p>
+<h2 id="call"><a href="#call" class="headerlink" title="call"></a>call</h2><p>接下来我们看看<code>call</code>及其子类型</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// call is an in-flight or completed singleflight.Do call</span><br><span class="hljs-comment">// 翻译了一下： 大致意思是说这个call代表了一个正在执行或者已经完成的请求</span><br><span class="hljs-keyword">type</span> call <span class="hljs-keyword">struct</span> &#123;<br>        wg sync.WaitGroup<br><br>        <span class="hljs-comment">// These fields are written once before the WaitGroup is done</span><br>        <span class="hljs-comment">// and are only read after the WaitGroup is done.</span><br>        <span class="hljs-comment">// 这个意思是，下面的val和err只能在&quot;WaitGroup&quot; done 之前才可以也只能被写入一次</span><br>        <span class="hljs-comment">// 并且只能在&quot;WaitGroup&quot; done 之后被读取</span><br>        val <span class="hljs-keyword">interface</span>&#123;&#125;<br>        err <span class="hljs-type">error</span><br><br>        <span class="hljs-comment">// These fields are read and written with the singleflight</span><br>        <span class="hljs-comment">// mutex held before the WaitGroup is done, and are read but</span><br>        <span class="hljs-comment">// not written after the WaitGroup is done.</span><br>        <span class="hljs-comment">//意思就是：</span><br>        <span class="hljs-comment">// 这些字段在 WaitGroup 完成之前使用 singleflight 互斥锁进行读写，</span><br>        <span class="hljs-comment">// 在 WaitGroup 完成之后，这些字段会被读取，但不会被写入。</span><br>        dups  <span class="hljs-type">int</span>  <span class="hljs-comment">//这个是记录这个 key 被分享了多少次    </span><br>        chans []<span class="hljs-keyword">chan</span>&lt;- Result <span class="hljs-comment">// 执行DoChan会被用到</span><br>&#125;<br><br><span class="hljs-comment">// Result holds the results of Do, so they can be passed</span><br><span class="hljs-comment">// on a channel.</span><br><span class="hljs-comment">// 意思是</span><br><span class="hljs-comment">// 这个Result 保存了Do的结果，因此它们可以通过通道传递</span><br><span class="hljs-keyword">type</span> Result <span class="hljs-keyword">struct</span> &#123;<br>        Val    <span class="hljs-keyword">interface</span>&#123;&#125;<br>        Err    <span class="hljs-type">error</span><br>        Shared <span class="hljs-type">bool</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>暂时，我们只是了解了这些类型有哪些字段，但字段的用途可能还有些不了解，别急，我们接着看</p>
+<h2 id="Do"><a href="#Do" class="headerlink" title="Do"></a>Do</h2><p>我们看看最主要的<code>Do</code>方法，具体的解释，我写在源码中</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(g *Group)</span></span> Do(key <span class="hljs-type">string</span>, fn <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> (<span class="hljs-keyword">interface</span>&#123;&#125;, <span class="hljs-type">error</span>)) (v <span class="hljs-keyword">interface</span>&#123;&#125;, err <span class="hljs-type">error</span>, shared <span class="hljs-type">bool</span>) &#123;<br>        <span class="hljs-comment">// 给group上锁，因为要开始读取g.m</span><br>        g.mu.Lock()<br>        <span class="hljs-comment">// 之前说过这个m是延迟初始化的，所以我们需要判断下是否需要初始化</span><br>        <span class="hljs-keyword">if</span> g.m == <span class="hljs-literal">nil</span> &#123;<br>                g.m = <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-type">string</span>]*call)<br>        &#125;<br>        <span class="hljs-comment">// 检查这个m中是否有key的这个请求</span><br>        <span class="hljs-keyword">if</span> c, ok := g.m[key]; ok &#123;<br>                <span class="hljs-comment">// 如果有，c.dup++</span><br>                <span class="hljs-comment">// 这个 dup应该是call被共享的次数</span><br>                c.dups++<br>                <span class="hljs-comment">// 解锁</span><br>                g.mu.Unlock()<br>                <span class="hljs-comment">// 等待call结束</span><br>                c.wg.Wait()<br>                   <br>                <span class="hljs-comment">// 走到这一步说明，请求完成，处理结果</span><br>                <span class="hljs-keyword">if</span> e, ok := c.err.(*panicError); ok &#123;<br>                        <span class="hljs-built_in">panic</span>(e)<br>                &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> c.err == errGoexit &#123;<br>                <span class="hljs-comment">// runtime.Goexit 是 Go 标准库 runtime 包中的一个函数，</span><br>                <span class="hljs-comment">// 用来 立即终止当前 goroutine 的执行，但 不会终止整个程序或其他 goroutines</span><br>                        runtime.Goexit()<br>                &#125;<br>                <span class="hljs-comment">// 返回结果</span><br>                <span class="hljs-keyword">return</span> c.val, c.err, <span class="hljs-literal">true</span><br>        &#125;<br>        <span class="hljs-comment">// 这里说明，这个是第一个请求的gorountine</span><br>        <span class="hljs-comment">// 创建一个新的call</span><br>        c := <span class="hljs-built_in">new</span>(call)<br>        <span class="hljs-comment">// wg add 1</span><br>        c.wg.Add(<span class="hljs-number">1</span>)<br>        <span class="hljs-comment">// 给map中对应的key赋值</span><br>        g.m[key] = c<br>        <span class="hljs-comment">// 写结束，解锁</span><br>        g.mu.Unlock()<br>        <br>        <span class="hljs-comment">// 执行任务</span><br>        g.doCall(c, key, fn)<br>        <span class="hljs-keyword">return</span> c.val, c.err, c.dups &gt; <span class="hljs-number">0</span><br>&#125;<br><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(g *Group)</span></span> doCall(c *call, key <span class="hljs-type">string</span>, fn <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> (<span class="hljs-keyword">interface</span>&#123;&#125;, <span class="hljs-type">error</span>)) &#123;<br>        <span class="hljs-comment">// 标志是否正常返回</span><br>        normalReturn := <span class="hljs-literal">false</span><br>        <span class="hljs-comment">// 捕捉到了panic</span><br>        recovered := <span class="hljs-literal">false</span><br><br>        <span class="hljs-comment">// use double-defer to distinguish panic from runtime.Goexit,</span><br>        <span class="hljs-comment">// more details see https://golang.org/cl/134395</span><br>        <span class="hljs-keyword">defer</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;<br>                <span class="hljs-comment">// 如果没有正常返回，并且没有成功捕捉到panic说明是Goexit的情况就设置错误errGoexit</span><br>                <span class="hljs-keyword">if</span> !normalReturn &amp;&amp; !recovered &#123;<br>                        c.err = errGoexit<br>                &#125;<br>                <br>                <span class="hljs-comment">// 任务结束,需要删除对应的map中对应的key</span><br>                <span class="hljs-comment">// 由于是对map的写操作，需要加锁</span><br>                g.mu.Lock()<br>                <span class="hljs-keyword">defer</span> g.mu.Unlock()<br>                <br>                <span class="hljs-comment">// 此次任务完成，wg done</span><br>                c.wg.Done()<br>                <span class="hljs-comment">// 检查对应key的值是否还是c</span><br>                <span class="hljs-comment">// 如果是，就删除对应的key</span><br>                <span class="hljs-keyword">if</span> g.m[key] == c &#123;<br>                        <span class="hljs-built_in">delete</span>(g.m, key)<br>                &#125;<br><br>                <span class="hljs-keyword">if</span> e, ok := c.err.(*panicError); ok &#123;<br>                        <span class="hljs-comment">// 为了防止等待的通道被永远阻塞，</span><br>                        <span class="hljs-comment">// 需要确保此panic无法恢复。</span><br>                        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(c.chans) &gt; <span class="hljs-number">0</span> &#123;<br>                                <span class="hljs-keyword">go</span> <span class="hljs-built_in">panic</span>(e)<br>                                <span class="hljs-keyword">select</span> &#123;&#125; <span class="hljs-comment">// Keep this goroutine around so that it will appear in the crash dump.</span><br>                        &#125; <span class="hljs-keyword">else</span> &#123;<br>                                <span class="hljs-built_in">panic</span>(e)<br>                        &#125;<br>                &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> c.err == errGoexit &#123;<br>                        <span class="hljs-comment">// Already in the process of goexit, no need to call again</span><br>                &#125; <span class="hljs-keyword">else</span> &#123;<br>                        <span class="hljs-comment">// 正常返回</span><br>                        <span class="hljs-keyword">for</span> _, ch := <span class="hljs-keyword">range</span> c.chans &#123;<br>                                ch &lt;- Result&#123;c.val, c.err, c.dups &gt; <span class="hljs-number">0</span>&#125;<br>                        &#125;<br>                &#125;<br>        &#125;()<br><br>        <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;<br>                <span class="hljs-keyword">defer</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> &#123;<br>                        <span class="hljs-keyword">if</span> !normalReturn &#123;<br>                                <span class="hljs-comment">// 理想情况下，我们应该等到确定了以下情况后再进行堆栈跟踪：</span><br>                                <span class="hljs-comment">// 这是一个恐慌还是一个 Runtime.GoExit。</span><br>                                <span class="hljs-comment">// 不幸的是，我们区分这两者的唯一方法是查看</span><br>                                <span class="hljs-comment">// 恢复是否阻止了 Goroutine 的终止，而</span><br>                                <span class="hljs-comment">// 当我们知道这一点时，与恐慌相关的堆栈跟踪部分已经被丢弃了。</span><br>                                <span class="hljs-keyword">if</span> r := <span class="hljs-built_in">recover</span>(); r != <span class="hljs-literal">nil</span> &#123;<br>                                        c.err = newPanicError(r)<br>                                &#125;<br>                        &#125;<br>                &#125;()<br>                <span class="hljs-comment">// 这里真正执行具体的任务</span><br>                <span class="hljs-comment">// 并标记正常返回</span><br>                <span class="hljs-comment">// 这里有一种特殊情况</span><br>                <span class="hljs-comment">// 就是fn()中有调用runtime.Goexit()</span><br>                <span class="hljs-comment">// 就会直接截断gorountine</span><br>                <span class="hljs-comment">// 但是注册的defer函数还是会被执行</span><br>                c.val, c.err = fn()<br>                normalReturn = <span class="hljs-literal">true</span><br>        &#125;()<br><br>        <span class="hljs-keyword">if</span> !normalReturn &#123;<br>                recovered = <span class="hljs-literal">true</span><br>        &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>其实还有个<code>DoChan</code>方法，但和<code>Do</code>方法不同的是，他返回的是一个<code>channel</code>，当第一个<code>gorountine</code>执行完后，就会往每一个正在等待的<code>gorountine</code>的<code>channel</code>中放入值</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// DoChan is like Do but returns a channel that will receive the</span><br><span class="hljs-comment">// results when they are ready.</span><br><span class="hljs-comment">//</span><br><span class="hljs-comment">// The returned channel will not be closed.</span><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(g *Group)</span></span> DoChan(key <span class="hljs-type">string</span>, fn <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> (<span class="hljs-keyword">interface</span>&#123;&#125;, <span class="hljs-type">error</span>)) &lt;-<span class="hljs-keyword">chan</span> Result &#123;<br>        ch := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> Result, <span class="hljs-number">1</span>)<br>        g.mu.Lock()<br>        <span class="hljs-keyword">if</span> g.m == <span class="hljs-literal">nil</span> &#123;<br>                g.m = <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-type">string</span>]*call)<br>        &#125;<br>        <span class="hljs-keyword">if</span> c, ok := g.m[key]; ok &#123;<br>                c.dups++<br>                c.chans = <span class="hljs-built_in">append</span>(c.chans, ch)<br>                g.mu.Unlock()<br>                <span class="hljs-keyword">return</span> ch<br>        &#125;<br>        c := &amp;call&#123;chans: []<span class="hljs-keyword">chan</span>&lt;- Result&#123;ch&#125;&#125;<br>        c.wg.Add(<span class="hljs-number">1</span>)<br>        g.m[key] = c<br>        g.mu.Unlock()<br><br>        <span class="hljs-keyword">go</span> g.doCall(c, key, fn)<br><br>        <span class="hljs-keyword">return</span> ch<br>&#125;<br></code></pre></td></tr></table></figure>
+        </div>
+        
+        <!-- 文章导航 -->
+        <nav class="post-nav">
+          
+          
+            <a class="next" href="../../05/casbin/">
+              Casbin
+              <i class="fas fa-chevron-right"></i>
+            </a>
+          
+        </nav>
+      </article>
+    </div>
+  </div>
+</div>
+
+    </div>
+    <footer class="footer">
+  <div class="status-bar">
+    <div class="status-item">
+      <i class="fas fa-code-branch"></i>
+      master
+    </div>
+    <div class="status-item">
+      <i class="fas fa-sync"></i>
+      cc
+    </div>
+    <div class="status-item">
+      <i class="fas fa-clock"></i>
+      2025-05-17
+    </div>
+    <div class="status-item">
+      Designed By&nbsp; <a href="https://github.com/B143KC47" target="_blank"> BlackCat</a>
+    </div>
+    <div class="status-item github">
+      <a href="#" target="_blank">
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+    
+    <!-- 全局配置 -->
+    <script>
+      window.HEXO_CONFIG = {
+        language: "zh-CN",
+        root: "/"
+      };
+      
+      // 特定于搜索的配置
+      window.VSC4T_SEARCH = {
+        root: "/"
+      };
+    </script>
+    
+    <script src="//cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/highlight.js@11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <!-- 这里可以放置自定义脚本 -->
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+  // Apply smooth scroll to non-TOC anchor links
+  document.querySelectorAll('a[href^="#"]:not(.toc-link)').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      // Check if querySelector is valid before using it
+      try {
+        const targetSelector = this.getAttribute('href');
+        // Basic check for potentially invalid selectors (though not exhaustive)
+        if (targetSelector && targetSelector.length > 1) { 
+          const targetElement = document.querySelector(targetSelector);
+          if (targetElement) {
+            targetElement.scrollIntoView({
+              behavior: 'smooth'
+            });
+          } else {
+            console.warn('Smooth scroll target not found:', targetSelector);
+          }
+        } else {
+           console.warn('Invalid href for smooth scroll:', targetSelector);
+        }
+      } catch (error) {
+        console.error('Error during smooth scroll:', error, 'Selector:', this.getAttribute('href'));
+        // Fallback or alternative behavior if needed
+        // For example, try getElementById if it's just an ID
+        const targetId = this.getAttribute('href').slice(1);
+        try {
+            const targetElementById = document.getElementById(decodeURIComponent(targetId));
+            if (targetElementById) {
+                targetElementById.scrollIntoView({ behavior: 'smooth' });
+            }
+        } catch (idError) {
+             console.error('Fallback getElementById also failed:', idError);
+        }
+      }
+    });
+  });
+});
+</script>
+<script src="../../../../js/toc.js"></script>
+
+<!-- Scripts -->
+<script>
+  // 将语言文件中的翻译传递给前端
+  window.HEXO_CONFIG = {
+    language: "zh-CN",
+    search_placeholder: "输入关键词搜索...",
+    search_no_results: "未找到相关结果",
+    search_result: "Ergebnis",
+    search_results: "搜索结果",
+    search_results_found: "找到 undefined 个结果",
+    search_in: "搜索范围",
+    search_in_title: "标题",
+    search_in_content: "内容",
+    search_in_tags: "标签",
+    search_in_categories: "分类",
+    search_filters: "搜索过滤器",
+    search_recent: "最近搜索",
+    search_clear: "清除",
+    search_loading: "加载中...",
+    search_error: "加载搜索数据时出错"
+  };
+</script>
+
+
+
+<!-- 添加所有需要的脚本 -->
+<script src="../../../../js/main.js"></script>
+<script src="../../../../js/search.js"></script>
+
+
+    <script>
+      // 移动端菜单切换
+      $(document).ready(function() {
+        $('.mobile-menu-toggle').click(function() {
+          $('.sidebar-explorer').toggleClass('show');
+        });
+      });
+    </script>
+  </body>
+</html>
