@@ -1,0 +1,10 @@
+[
+    {
+        "type": "dir",
+        "name": "golang",
+        "label" : "Golang",
+        "collapsible": true,
+        "collapsed": false,
+        "overviewHeaders": [2]
+    }
+]
