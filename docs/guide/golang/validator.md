@@ -46,8 +46,11 @@ if err := c.ShouldBindBodyWithJSON(&req); err != nil {
 }
 ```
 可以发现，如果我们没有配置`binding`标签，模型绑定后我们需要手动去验证数据的合法性，这样会增加代码量，并且容易出错
+
 但是如果我们配置了`binding`标签，模型绑定会自动帮我们做数据验证，这样就省去了手动验证的麻烦
+
 而`gin`框架默认使用的验证库就是`go-playground/validator`，它是一个功能强大且灵活的Go语言数据验证库
+
 这里顺便提一嘴，`binging`里面的标签，比如`required`都是可以从`go-playground/validator`的[文档](https://pkg.go.dev/github.com/go-playground/validator/v10#hdr-Baked_In_Validators_and_Tags)中找到的，这边后面会简单介绍一些常见的；而且，我们也可以自定义标签及验证函数
 
 
@@ -187,6 +190,7 @@ func main() {
 
 ### 自定义约束
 除了使用`validator`提供的约束外，还可以定义自己的约束
+
 例如现在有个需求，要求用户必须使用回文串作为用户名，我们可以自定义这个约束：
 
 ```go
@@ -277,10 +281,8 @@ func main() {
 
 + `contains`：包含参数子串，例如contains=email；
 + `containsany`：包含参数中任意的 UNICODE 字符，例如containsany=abcd；
-+ `containsrune`：包含参数表示的 rune 字符，例如containsrune=☻；
 + `excludes`：不包含参数子串，例如excludes=email；
 + `excludesall`：不包含参数中任意的 UNICODE 字符，例如excludesall=abcd；
-+ `excludesrune`：不包含参数表示的 rune 字符，excludesrune=☻；
 + `startswith`：以参数子串为前缀，例如startswith=hello；
 + `endswith`：以参数子串为后缀，例如endswith=bye
 
@@ -303,11 +305,13 @@ func main() {
 ### 跨字段约束
 
 `validator`允许定义跨字段的约束，即该字段与其他字段之间的关系
+
 这种约束实际上分为两种:
 + 参数字段就是同一个结构中的平级字段
 + 参数字段为结构中其他字段的字段
 
 如果是约束同一个结构中的字段，使用`eqfield`，例如 eqfield=ConfirmPassword
+
 如果是更深层次的字段，使用`eqcsfield`，例如 eqcsfield=InnerStructField.Field
 
 例如:
