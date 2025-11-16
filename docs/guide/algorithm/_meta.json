@@ -1,0 +1,12 @@
+[
+    {
+        "type": "dir",
+        "name": "DynamicProgram",
+        "label": "动态规划",
+        "collapsible": true,
+        "collapsed": false,
+        "overviewHeaders": [
+            2
+        ]
+    }
+]

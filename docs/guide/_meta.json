@@ -6,5 +6,15 @@
         "collapsible": true,
         "collapsed": false,
         "overviewHeaders": [2]
+    },
+    {
+        "type": "dir",
+        "name": "algorithm",
+        "label": "算法",
+        "collapsible": true,
+        "collapsed": false,
+        "overviewHeaders": [
+            2
+        ]
     }
 ]
