@@ -22,7 +22,7 @@ func (d *Dao) GetUser(ctx context.Context,id uint64) (User,error)
 现在我们加需求，除了精确查询，这个还要支持模糊查询，比如说根据name,gender等，模糊查询还要支持联合查询，比如name = "123" and gender = "man"
 
 那我们来利用对象来构造上下文,来改造一下
-```golang
+```go
 type SearchCtx struct{
     ByPrimaryKey bool //是否根据主键查询
     ID uint64
@@ -37,7 +37,7 @@ func (d *Dao) GetUser(ctx context.Context, searchCtx SearchCtx) ([]User,error) {
 我们现在想一下SearchCtx怎么构造？
 
 既然我们在学习建造者模式，我们来用建造者模式来构建`SearchCtx` ,所以我们添加下列代码
-```golang
+```go
 type SearchCtxBuilder struct {
     SearchCtx
 }
@@ -71,7 +71,7 @@ func (b *SearchCtxBuilder) Build() SearchCtx {
 }
 ```
 因此，我们的`GetUser` 可以这样调用
-```golang
+```go
 users,err := dao.GetUser(context.Background(),NewSearchCtxBuilder().
     WithByPrimaryKey(1).Build())
 
@@ -82,7 +82,7 @@ users,err := dao.GetUser(context.Background(), NewSearchCtxBuilder().
 看起来很有条理，在构建的时候，就不必关心一些可选字段了，而且这样链式调用，也使得代码流畅，符合自然思维
 
 接下来我们再把实现完成下
-```golang
+```go
 func (d *Dao) GetUser(ctx context.Context, searchCtx SearchCtx) ([]User, error) {
     db := d.db.WithContext(ctx)
     var users []User
@@ -116,7 +116,7 @@ func (d *Dao) GetUser(ctx context.Context, searchCtx SearchCtx) ([]User, error) 
 
 `SearchCtx` 不变
 添加新的类，可供大家参考
-```golang
+```go
 type SearchCtxOpts struct {
     SearchCtx
 }
@@ -153,7 +153,7 @@ func NewSearchCtx(opts ...SearchCtxOpt) SearchCtx {
 }
 ```
 同样的，给出如何构造
-```golang
+```go
 users,err := dao.GetUser(context.Background(), 
     NewSearchCtx(WithByPrimaryKey(1)))
 users,err := dao.GetUser(context.Background(), 
@@ -163,7 +163,7 @@ users,err := dao.GetUser(context.Background(),
 **小问题：如果模糊查询的字段增多了怎么办，难道还一个一个if吗？**
 
 原始的：
-```golang
+```go
 func (d *Dao) GetUser(ctx context.Context, searchCtx SearchCtx) ([]User, error) {
     db := d.db.WithContext(ctx)
     var users []User
@@ -191,7 +191,7 @@ func (d *Dao) GetUser(ctx context.Context, searchCtx SearchCtx) ([]User, error) 
 }
 ```
 改造：
-```golang
+```go
 type QueryOption func(db *gorm.DB)
 
 type SearchCtx struct {
