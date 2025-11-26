@@ -16,5 +16,15 @@
         "overviewHeaders": [
             2
         ]
+    },
+    {
+        "type": "dir",
+        "name": "design_pattern",
+        "label": "设计模式",
+        "collapsible": true,
+        "collapsed": false,
+        "overviewHeaders": [
+            2
+        ]
     }
 ]
