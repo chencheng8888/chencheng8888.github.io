@@ -21,6 +21,16 @@
     },
     {
         "type": "dir",
+        "name": "SlidingWindow",
+        "label": "滑动窗口",
+        "collapsible": true,
+        "collapsed": false,
+        "overviewHeaders": [
+            2
+        ]
+    },
+    {
+        "type": "dir",
         "name": "Brain",
         "label": "智力题",
         "collapsible": true,
