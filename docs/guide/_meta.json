@@ -26,5 +26,15 @@
         "overviewHeaders": [
             2
         ]
+    },
+    {
+        "type": "dir",
+        "name": "operating_system",
+        "label": "操作系统",
+        "collapsible": true,
+        "collapsed": false,
+        "overviewHeaders": [
+            2
+        ]
     }
 ]

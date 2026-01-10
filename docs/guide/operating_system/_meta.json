@@ -1,0 +1,12 @@
+[
+    {
+        "type": "dir",
+        "name": "Process",
+        "label": "进程",
+        "collapsible": true,
+        "collapsed": false,
+        "overviewHeaders": [
+            2
+        ]
+    }
+]
